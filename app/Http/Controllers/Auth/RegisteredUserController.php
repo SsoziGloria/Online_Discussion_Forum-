@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -36,9 +37,14 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        $name = trim($request->string('name')->toString());
+        $username = $this->generateUsername($name);
+
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name' => $name,
+            'username' => $username,
+            'display_name' => $name,
+            'email' => $request->string('email')->toString(),
             'password' => Hash::make($request->password),
         ]);
 
@@ -47,5 +53,29 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));
+    }
+
+    private function generateUsername(string $name): string
+    {
+        $baseUsername = Str::of($name)
+            ->lower()
+            ->slug(separator: '_')
+            ->limit(20, '')
+            ->trim('_')
+            ->toString();
+
+        if ($baseUsername === '') {
+            $baseUsername = 'user';
+        }
+
+        $username = $baseUsername;
+        $suffix = 1;
+
+        while (User::where('username', $username)->exists()) {
+            $username = Str::limit($baseUsername, 20 - strlen((string) $suffix) - 1, '') . '_' . $suffix;
+            $suffix++;
+        }
+
+        return $username;
     }
 }

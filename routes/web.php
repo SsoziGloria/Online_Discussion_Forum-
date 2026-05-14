@@ -1,29 +1,24 @@
 <?php
 
-use App\Http\Controllers\ThreadController;
-use App\Http\Controllers\PostController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CommunityController;
+use App\Http\Controllers\ForumController;
 use Illuminate\Support\Facades\Route;
 
-// ====================== PUBLIC ROUTES ======================
-Route::get('/', [ThreadController::class, 'index'])->name('home');
+Route::get('/', [ForumController::class, 'home'])->name('home');
+Route::get('/categories/{category:slug}', [ForumController::class, 'category'])->name('categories.show');
+Route::get('/threads/create', [ForumController::class, 'create'])->name('threads.create');
+Route::get('/threads/{thread:slug}', [ForumController::class, 'thread'])->name('threads.show');
+Route::get('/search', [ForumController::class, 'search'])->name('search');
+Route::get('/notifications', [ForumController::class, 'notifications'])->name('notifications.index');
+Route::get('/moderation/flags', [ForumController::class, 'moderation'])->name('moderation.flags');
 
-// ====================== AUTHENTICATED ROUTES ======================
-Route::middleware('auth')->group(function () {
+Route::get('/members/{user:username}', [CommunityController::class, 'show'])->name('members.show');
+Route::get('/settings/profile', [CommunityController::class, 'settings'])->name('settings.profile');
 
-    // Threads CRUD
-    Route::resource('threads', ThreadController::class);
+Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+Route::get('/admin/categories', [AdminController::class, 'categories'])->name('admin.categories');
 
-    // Replies (Posts)
-    Route::post('/threads/{thread}/posts', [PostController::class, 'store'])
-         ->name('posts.store');
-
-    Route::delete('/posts/{post}', [PostController::class, 'destroy'])
-         ->name('posts.destroy');
-
-    // Dashboard redirect
-    Route::get('/dashboard', function () {
-        return redirect()->route('home');
-    })->name('dashboard');
-});
+Route::get('/dashboard', fn () => redirect()->route('home'))->name('dashboard');
 
 require __DIR__.'/auth.php';

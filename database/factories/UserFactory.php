@@ -24,10 +24,23 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $name = fake()->name();
+        $username = Str::of($name)
+            ->lower()
+            ->slug(separator: '_')
+            ->limit(20, '')
+            ->trim('_')
+            ->toString();
+
         return [
-            'name' => fake()->name(),
+            'name' => $name,
+            'username' => $username !== '' ? fake()->unique()->bothify($username.'###') : fake()->unique()->userName(),
+            'display_name' => $name,
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
+            'role' => 'user',
+            'reputation' => 0,
+            'is_banned' => false,
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];

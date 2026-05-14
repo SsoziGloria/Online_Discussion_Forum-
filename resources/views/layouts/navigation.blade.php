@@ -1,43 +1,46 @@
-<nav class="bg-white border-b border-gray-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('home') }}" class="text-xl font-bold text-gray-800">
-                        💬 Discussion Forum
-                    </a>
+<nav class="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[color:rgba(255,249,235,0.92)] backdrop-blur">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 md:px-6">
+        <div class="flex items-center gap-6">
+            <a href="{{ route('home') }}" class="text-2xl font-extrabold tracking-[-0.04em] text-[var(--color-primary)]">
+                DevDen
+            </a>
+            <div class="hidden items-center gap-5 text-sm font-semibold text-[var(--color-muted)] md:flex">
+                <a href="{{ route('home') }}" class="{{ request()->routeIs('home', 'categories.show', 'threads.show') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)]' }}">Discussions</a>
+                <a href="{{ route('admin.categories') }}" class="{{ request()->routeIs('admin.categories') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)]' }}">Categories</a>
+                <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users', 'members.show', 'settings.profile') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)]' }}">Members</a>
+                <a href="{{ route('moderation.flags') }}" class="{{ request()->routeIs('moderation.flags') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)]' }}">Moderation</a>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <form action="{{ route('search') }}" method="GET" class="hidden md:block">
+                <label for="global-search" class="sr-only">Search</label>
+                <div class="forum-input-wrap w-72">
+                    <span class="material-symbols-outlined text-[20px] text-[var(--color-muted)]">search</span>
+                    <input
+                        id="global-search"
+                        type="search"
+                        name="q"
+                        value="{{ request('q') }}"
+                        placeholder="Search discussions"
+                        class="forum-input border-0 bg-transparent px-0 py-0 focus:ring-0"
+                    >
                 </div>
-            </div>
+            </form>
 
-            <!-- Navigation Links -->
-            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                <a href="{{ route('home') }}" 
-                   class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition">
-                    Home
+            <a href="{{ route('notifications.index') }}" class="forum-icon-button" aria-label="Notifications">
+                <span class="material-symbols-outlined {{ request()->routeIs('notifications.index') ? 'fill-1 text-[var(--color-primary)]' : '' }}">notifications</span>
+            </a>
+
+            @php($navUser = auth()->user())
+            @if($navUser)
+                <a href="{{ route('members.show', $navUser->username) }}" class="forum-avatar">
+                    {{ strtoupper(substr($navUser->display_name ?: $navUser->username, 0, 2)) }}
                 </a>
-            </div>
-
-            <!-- Right Side -->
-            <div class="hidden sm:flex sm:items-center sm:ml-6">
-                @guest
-                    <a href="{{ route('login') }}" class="text-sm text-gray-600 hover:text-gray-900">Log in</a>
-                    <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-600 hover:text-gray-900">Register</a>
-                @else
-                    <div class="flex items-center">
-                        <span class="text-sm text-gray-700 mr-4">
-                            Hi, {{ Auth::user()->name }}
-                        </span>
-                        
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="text-sm text-red-600 hover:text-red-900">
-                                Log out
-                            </button>
-                        </form>
-                    </div>
-                @endguest
-            </div>
+            @else
+                <a href="{{ route('login') }}" class="forum-btn-secondary hidden md:inline-flex">Log in</a>
+                <a href="{{ route('register') }}" class="forum-btn hidden md:inline-flex">Register</a>
+            @endif
         </div>
     </div>
 </nav>

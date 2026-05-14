@@ -14,11 +14,20 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('username')->unique();
+            $table->string('display_name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', ['admin', 'moderator', 'user'])->default('user');
+            $table->timestamp('email_verified_at')->nullable();
+            $table->text('bio')->nullable();
+            $table->string('avatar_url')->nullable();
+            $table->boolean('is_banned')->default(false);
+            $table->timestamp('banned_at')->nullable();
+            $table->integer('reputation')->default(0);
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

@@ -1,5 +1,6 @@
 *.log
 .DS_Store
+.agents
 .env
 .env.backup
 .env.production
@@ -20,8 +21,11 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/THEMING
 /vendor
 _ide_helper.php
+boost.json
 Homestead.json
 Homestead.yaml
+skills-lock.json
 Thumbs.db

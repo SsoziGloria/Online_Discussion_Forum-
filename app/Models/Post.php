@@ -2,22 +2,51 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
 
-    protected $fillable = ['body', 'thread_id', 'user_id'];
+    protected $fillable = [
+        'thread_id',
+        'user_id',
+        'body',
+        'is_edited',
+        'edited_at',
+        'vote_score',
+    ];
 
-    public function user()
+    protected function casts(): array
+    {
+        return [
+            'is_edited' => 'boolean',
+            'edited_at' => 'datetime',
+        ];
+    }
+
+    // ─── Relationships ────────────────────────────────────────────────────────
+
+    public function thread(): BelongsTo
+    {
+        return $this->belongsTo(Thread::class);
+    }
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function thread()
+    public function votes(): HasMany
     {
-        return $this->belongsTo(Thread::class);
+        return $this->hasMany(Vote::class);
+    }
+
+    public function flags(): HasMany
+    {
+        return $this->hasMany(Flag::class);
     }
 }

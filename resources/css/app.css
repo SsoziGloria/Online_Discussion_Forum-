@@ -1,3 +1,180 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        color-scheme: light;
+        --color-bg: #fff9eb;
+        --color-surface: #ffffff;
+        --color-surface-soft: #f8f1df;
+        --color-surface-muted: #efe5d0;
+        --color-border: #dbc7bb;
+        --color-text: #241c18;
+        --color-muted: #67544b;
+        --color-primary: #6f331d;
+        --color-primary-soft: #f7d9cb;
+        --color-secondary: #7b5b4d;
+        --color-danger: #a53a2b;
+        --color-success: #3c6e57;
+        --color-on-primary: #fffdf9;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply min-h-screen antialiased;
+        background:
+            radial-gradient(circle at top, rgba(247, 217, 203, 0.45), transparent 30rem),
+            linear-gradient(180deg, #fff9eb 0%, #fcf4e5 100%);
+        color: var(--color-text);
+        font-family: 'Lato', sans-serif;
+    }
+
+    ::selection {
+        background: var(--color-primary);
+        color: var(--color-on-primary);
+    }
+}
+
+@layer components {
+    .forum-body {
+        @apply flex min-h-screen flex-col;
+    }
+
+    .forum-shell {
+        @apply mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-8 md:px-6 md:py-12;
+    }
+
+    .forum-card {
+        @apply rounded-2xl border p-6 shadow-sm;
+        border-color: var(--color-border);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.88));
+        box-shadow: 0 16px 48px rgba(111, 51, 29, 0.06);
+    }
+
+    .forum-card-muted {
+        @apply rounded-2xl border p-6;
+        border-color: var(--color-border);
+        background: rgba(248, 241, 223, 0.92);
+    }
+
+    .forum-eyebrow {
+        @apply text-sm font-semibold tracking-[0.14em];
+        color: var(--color-muted);
+    }
+
+    .forum-title {
+        @apply text-4xl font-extrabold leading-tight tracking-[-0.04em] md:text-5xl;
+        text-wrap: balance;
+    }
+
+    .forum-section-title {
+        @apply text-2xl font-semibold tracking-[-0.03em] md:text-3xl;
+        text-wrap: balance;
+    }
+
+    .forum-copy {
+        @apply max-w-[68ch] text-lg leading-8;
+        color: var(--color-muted);
+        text-wrap: pretty;
+    }
+
+    .forum-tag {
+        @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold;
+        background: var(--color-primary-soft);
+        color: var(--color-primary);
+    }
+
+    .forum-tag-neutral {
+        @apply inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold;
+        border-color: var(--color-border);
+        color: var(--color-muted);
+        background: rgba(255, 255, 255, 0.7);
+    }
+
+    .forum-btn {
+        @apply inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98];
+        background: var(--color-primary);
+        color: var(--color-on-primary);
+        box-shadow: 0 10px 24px rgba(111, 51, 29, 0.18);
+    }
+
+    .forum-btn:hover {
+        background: #5a2614;
+    }
+
+    .forum-btn-secondary {
+        @apply inline-flex items-center justify-center rounded-xl border px-5 py-3 text-sm font-semibold transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98];
+        border-color: var(--color-border);
+        color: var(--color-secondary);
+        background: rgba(255, 255, 255, 0.8);
+    }
+
+    .forum-btn-disabled {
+        @apply inline-flex cursor-not-allowed items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold opacity-60;
+        background: var(--color-surface-muted);
+        color: var(--color-muted);
+    }
+
+    .forum-icon-button {
+        @apply inline-flex h-10 w-10 items-center justify-center rounded-full border transition duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2;
+        border-color: var(--color-border);
+        color: var(--color-muted);
+        background: rgba(255, 255, 255, 0.8);
+    }
+
+    .forum-avatar {
+        @apply inline-flex h-10 w-10 items-center justify-center rounded-2xl border text-sm font-bold;
+        border-color: var(--color-border);
+        background: var(--color-surface-muted);
+        color: var(--color-primary);
+    }
+
+    .forum-input-wrap {
+        @apply flex items-center gap-2 rounded-2xl border px-4 py-3;
+        border-color: var(--color-border);
+        background: rgba(255, 255, 255, 0.78);
+    }
+
+    .forum-input,
+    .forum-select,
+    .forum-textarea {
+        @apply w-full rounded-xl border px-4 py-3 text-base focus:outline-none focus:ring-2;
+        border-color: var(--color-border);
+        background: rgba(255, 255, 255, 0.84);
+        color: var(--color-text);
+    }
+
+    .forum-input::placeholder,
+    .forum-textarea::placeholder {
+        color: var(--color-muted);
+    }
+
+    .forum-input:focus,
+    .forum-select:focus,
+    .forum-textarea:focus,
+    .forum-input-wrap:focus-within {
+        border-color: var(--color-primary);
+        --tw-ring-color: rgba(111, 51, 29, 0.18);
+    }
+
+    .forum-input:disabled,
+    .forum-select:disabled,
+    .forum-textarea:disabled {
+        @apply cursor-not-allowed opacity-70;
+        background: rgba(239, 229, 208, 0.72);
+    }
+
+    .forum-data {
+        font-family: 'JetBrains Mono', monospace;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .forum-divider {
+        @apply border-t;
+        border-color: var(--color-border);
+    }
+}
