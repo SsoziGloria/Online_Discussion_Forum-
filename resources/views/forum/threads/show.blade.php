@@ -68,11 +68,23 @@
                                 <span class="forum-data text-sm text-[var(--color-primary)]">{{ $post->vote_score >= 0 ? '+' : '' }}{{ $post->vote_score }}</span>
                             </div>
                             <p class="mt-4 max-w-[72ch] text-base leading-7 text-[var(--color-text)]">{{ $post->body }}</p>
+                            @auth
+                                <div class="forum-divider mt-5 pt-4">
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        @if ((int) $post->user_id === (int) auth()->id())
+                                            <a href="{{ route('posts.edit', $post) }}" class="forum-action-link">Edit reply</a>
+                                            <a href="{{ route('posts.delete.confirm', $post) }}" class="forum-action-link-danger">Delete reply</a>
+                                        @else
+                                            <a href="{{ route('posts.report', $post) }}" class="forum-action-link">Report reply</a>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endauth
                         </article>
                     @empty
                         <div class="forum-card text-center">
                             <p class="forum-section-title">No replies yet</p>
-                            <p class="forum-copy mx-auto mt-3">This thread view is now wired. Replies will appear from the `posts` table as soon as data is available.</p>
+                            <p class="forum-copy mx-auto mt-3">Replies will appear here as members join the conversation.</p>
                         </div>
                     @endforelse
                 </div>
@@ -81,14 +93,14 @@
             <section class="forum-card mt-8">
                 <div class="mb-5 flex items-center justify-between gap-4">
                     <div>
-                        <p class="forum-eyebrow">Reply preview</p>
-                        <h2 class="forum-section-title mt-2">Posting stays disabled for now</h2>
+                        <p class="forum-eyebrow">Join the discussion</p>
+                        <h2 class="forum-section-title mt-2">Share your reply with the community</h2>
                     </div>
-                    <span class="forum-tag-neutral">Read-only</span>
+                    <span class="forum-tag-neutral">Coming soon</span>
                 </div>
-                <textarea class="forum-textarea min-h-40" disabled placeholder="Controllers for write actions are intentionally not enabled yet."></textarea>
+                <textarea class="forum-textarea min-h-40" disabled placeholder="Write your reply here once posting is available."></textarea>
                 <div class="mt-4 flex items-center justify-between gap-4">
-                    <p class="text-sm text-[var(--color-muted)]">The page is using the prototype structure, but submit actions remain disabled until create and moderation flows are implemented.</p>
+                    <p class="text-sm text-[var(--color-muted)]">Reply posting will appear here when member submissions are available.</p>
                     <span class="forum-btn-disabled">Submit reply</span>
                 </div>
             </section>

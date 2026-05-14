@@ -7,11 +7,11 @@
         <div>
             <p class="forum-eyebrow">Category listing</p>
             <h1 class="forum-title mt-2">{{ $category->name }}</h1>
-            <p class="forum-copy mt-4">{{ $category->description ?: 'Threads in this category are shown read-only until create and moderation flows are wired up.' }}</p>
+            <p class="forum-copy mt-4">{{ $category->description ?: 'Browse recent conversations and discover what members are talking about in this space.' }}</p>
         </div>
         <div class="flex flex-wrap gap-3">
             <a href="{{ route('home') }}" class="forum-btn-secondary">Back to categories</a>
-            <a href="{{ route('threads.create') }}" class="forum-btn">New thread preview</a>
+            <a href="{{ route('threads.create') }}" class="forum-btn">Start a new thread</a>
         </div>
     </section>
 
@@ -52,7 +52,7 @@
         @empty
             <div class="forum-card text-center">
                 <p class="forum-section-title">No threads in this category</p>
-                <p class="forum-copy mx-auto mt-3">The view is ready. Once threads exist, they will appear here using the current `threads` table and relationships.</p>
+                <p class="forum-copy mx-auto mt-3">Once members begin posting here, the latest threads will appear in this category.</p>
             </div>
         @endforelse
     </section>

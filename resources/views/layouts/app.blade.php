@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'DevDen')</title>
-    <meta name="description" content="@yield('meta_description', 'A warm, structured discussion forum for categories, threads, replies, and moderation workflows.')">
+    <meta name="description" content="@yield('meta_description', 'A welcoming discussion forum for categories, conversations, replies, and community activity.')">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Source+Sans+3:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,6 +20,12 @@
     @include('layouts.navigation')
 
     <main id="main-content" class="forum-shell">
+        @if (session('success'))
+            <div class="forum-banner-success mb-6">
+                {{ session('success') }}
+            </div>
+        @endif
+
         @yield('content')
     </main>
 
@@ -27,7 +33,7 @@
         <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-[var(--color-muted)] md:flex-row md:items-center md:justify-between md:px-6">
             <div>
                 <span class="font-semibold tracking-tight text-[var(--color-primary)]">DevDen</span>
-                <p class="mt-1">Read-only forum preview built from the current Laravel models and migrations.</p>
+                <p class="mt-1">A welcoming place for thoughtful conversations, shared questions, and community updates.</p>
             </div>
             <nav class="flex flex-wrap gap-4">
                 <a href="{{ route('home') }}" class="transition hover:text-[var(--color-primary)]">Discussions</a>

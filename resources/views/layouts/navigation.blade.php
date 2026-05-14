@@ -34,6 +34,10 @@
 
             @php($navUser = auth()->user())
             @if($navUser)
+                <form action="{{ route('logout') }}" method="POST" class="hidden md:block">
+                    @csrf
+                    <button type="submit" class="forum-nav-action">Log out</button>
+                </form>
                 <a href="{{ route('members.show', $navUser->username) }}" class="forum-avatar">
                     {{ strtoupper(substr($navUser->display_name ?: $navUser->username, 0, 2)) }}
                 </a>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\ForumController;
+use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ForumController::class, 'home'])->name('home');
@@ -18,6 +19,15 @@ Route::get('/settings/profile', [CommunityController::class, 'settings'])->name(
 
 Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
 Route::get('/admin/categories', [AdminController::class, 'categories'])->name('admin.categories');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+    Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
+    Route::get('/posts/{post}/report', [PostController::class, 'report'])->name('posts.report');
+    Route::post('/posts/{post}/report', [PostController::class, 'storeReport'])->name('posts.report.store');
+    Route::get('/posts/{post}/delete', [PostController::class, 'confirmDelete'])->name('posts.delete.confirm');
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+});
 
 Route::get('/dashboard', fn () => redirect()->route('home'))->name('dashboard');
 

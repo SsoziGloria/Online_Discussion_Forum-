@@ -5,13 +5,13 @@
 @section('content')
     <section class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
         <div class="space-y-6">
-            <p class="forum-eyebrow">Read-only community preview</p>
-            <h1 class="forum-title">Categories first, threads second, structure always visible.</h1>
+            <p class="forum-eyebrow">Community hub</p>
+            <h1 class="forum-title">Join conversations, explore categories, and keep up with your community.</h1>
             <p class="forum-copy">
-                The forum now maps directly to the migrations already in this project: categories contain threads, threads carry the original post body, replies live as posts, and moderation stays visible without enabling writes.
+                Discover active discussions, follow the latest replies, and find the spaces that match your interests.
             </p>
             <div class="flex flex-wrap gap-3">
-                <a href="{{ route('threads.create') }}" class="forum-btn">Preview new thread</a>
+                <a href="{{ route('threads.create') }}" class="forum-btn">Start a discussion</a>
                 <a href="{{ route('search') }}" class="forum-btn-secondary">Search discussions</a>
             </div>
         </div>
@@ -39,15 +39,15 @@
     <section class="mt-12">
         <div class="mb-6 flex items-end justify-between gap-4">
             <div>
-                <p class="forum-eyebrow">Category map</p>
-                <h2 class="forum-section-title mt-2">Discussion spaces built from the existing schema</h2>
+                <p class="forum-eyebrow">Categories</p>
+                <h2 class="forum-section-title mt-2">Find the right place for your next conversation.</h2>
             </div>
         </div>
 
         @if ($categories->isEmpty())
             <div class="forum-card text-center">
                 <p class="forum-section-title">No categories yet</p>
-                <p class="forum-copy mx-auto mt-3">Run the migrations and seed forum data when ready. The Blade surface is in place and waiting for content.</p>
+                <p class="forum-copy mx-auto mt-3">Categories will appear here as the community begins sharing conversations.</p>
             </div>
         @else
             <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -61,7 +61,7 @@
                                         {{ $category->name }}
                                     </a>
                                     <p class="mt-3 text-base leading-7 text-[var(--color-muted)]">
-                                        {{ $category->description ?: 'A discussion area backed by the current forum schema.' }}
+                                        {{ $category->description ?: 'A place for members to share questions, ideas, and thoughtful replies.' }}
                                     </p>
                                 </div>
                                 <span class="forum-tag-neutral">{{ $category->threads_count }} threads</span>

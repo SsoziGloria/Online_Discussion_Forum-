@@ -7,24 +7,42 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
+    <body>
+        <div class="forum-shell-auth">
+            <section class="forum-auth-hero">
+                <div class="max-w-2xl">
+                    <a href="{{ route('home') }}" class="forum-tag-neutral">Modern Discourse</a>
+                    <p class="forum-eyebrow mt-8">Member access</p>
+                    <h1 class="forum-title mt-3">Your community account, all in one familiar place.</h1>
+                    <p class="forum-copy mt-6">
+                        Sign in, create an account, or recover access using the same calm and welcoming experience as the rest of the forum.
+                    </p>
+                </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+                <div class="mt-10 grid gap-4 sm:grid-cols-3">
+                    <div class="forum-card-muted p-4">
+                        <p class="forum-eyebrow">Profiles</p>
+                        <p class="forum-data mt-2 text-xl text-[var(--color-primary)]">Names first</p>
+                    </div>
+                    <div class="forum-card-muted p-4">
+                        <p class="forum-eyebrow">Recovery</p>
+                        <p class="forum-data mt-2 text-xl text-[var(--color-primary)]">Email-based</p>
+                    </div>
+                    <div class="forum-card-muted p-4">
+                        <p class="forum-eyebrow">Security</p>
+                        <p class="forum-data mt-2 text-xl text-[var(--color-primary)]">Session aware</p>
+                    </div>
+                </div>
+            </section>
+
+            <main class="forum-auth-panel">
                 {{ $slot }}
-            </div>
+            </main>
         </div>
     </body>
 </html>
