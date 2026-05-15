@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Thread;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ThreadController extends Controller
 {
@@ -13,9 +15,12 @@ class ThreadController extends Controller
         return view('threads.index', compact('threads'));
     }
 
-    public function create()
+    public function create(?Category $category = null)
     {
-        return view('threads.create');
+        return view('threads.create', [
+            'category' => $category,
+            'categories' => Category::query()->orderBy('name')->get(),
+        ]);
     }
 
     public function store(Request $request)
@@ -23,15 +28,27 @@ class ThreadController extends Controller
         $request->validate([
             'title' => 'required|max:255',
             'body' => 'required|min:10',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
-        Thread::create([
+        $slug = Str::slug($request->title);
+        $originalSlug = $slug;
+        $counter = 1;
+
+        while (Thread::where('slug', $slug)->exists()) {
+            $slug = "{$originalSlug}-{$counter}";
+            $counter++;
+        }
+
+        $thread = Thread::create([
+            'category_id' => $request->input('category_id'),
+            'user_id' => auth()->id(),
             'title' => $request->title,
             'body' => $request->body,
-            'user_id' => auth()->id(),
+            'slug' => $slug,
         ]);
 
-        return redirect()->route('threads.index')->with('success', 'Thread created successfully!');
+        return redirect()->route('threads.show', $thread)->with('success', 'Thread created successfully!');
     }
 
     public function show(Thread $thread)

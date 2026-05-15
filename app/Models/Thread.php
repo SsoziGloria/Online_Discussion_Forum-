@@ -28,6 +28,11 @@ class Thread extends Model
         ];
     }
 
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     // ─── Relationships ────────────────────────────────────────────────────────
 
     public function category(): BelongsTo

@@ -11,17 +11,46 @@
                 @csrf
 
                 <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    @if(isset($category))
+                        <input type="text" value="{{ $category->name }}" readonly
+                               class="w-full px-5 py-4 border border-gray-300 rounded-2xl bg-gray-100 text-gray-700 text-lg" />
+                        <input type="hidden" name="category_id" value="{{ $category->id }}">
+                    @else
+                        <select name="category_id" required
+                                class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-lg">
+                            <option value="">Select a category</option>
+                            @foreach($categories as $optionCategory)
+                                <option value="{{ $optionCategory->id }}" {{ old('category_id') == $optionCategory->id ? 'selected' : '' }}>
+                                    {{ $optionCategory->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @endif
+                    @error('category_id')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Thread Title</label>
                     <input type="text" name="title" 
+                           value="{{ old('title') }}"
                            class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-lg"
                            placeholder="e.g. How to prepare for the upcoming Laravel exam?" required>
+                    @error('title')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="mb-8">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Discussion Content</label>
                     <textarea name="body" rows="10"
                               class="w-full px-5 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                              placeholder="Write your thoughts here..." required></textarea>
+                              placeholder="Write your thoughts here..." required>{{ old('body') }}</textarea>
+                    @error('body')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="flex gap-4">

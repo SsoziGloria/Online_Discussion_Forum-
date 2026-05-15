@@ -7,9 +7,13 @@
         <div>
             <p class="forum-eyebrow">Admin preview</p>
             <h1 class="forum-title mt-2">Category management</h1>
-            <p class="forum-copy mt-4">The management surface reads directly from the `categories` table while keeping category creation and updates disabled.</p>
+            <p class="forum-copy mt-4">The management surface reads directly from the `categories` table, and authenticated users may now create new categories.</p>
         </div>
-        <span class="forum-btn-disabled">Create new category</span>
+        @auth
+            <a href="{{ route('categories.create') }}" class="forum-btn">Create new category</a>
+        @else
+            <a href="{{ route('login') }}" class="forum-btn">Login to create category</a>
+        @endauth
     </section>
 
     <section class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
@@ -50,27 +54,35 @@
             <h2 class="forum-section-title mt-2">{{ $selectedCategory?->name ?? 'No category selected' }}</h2>
 
             @if ($selectedCategory)
-                <div class="mt-6 space-y-5">
+                <form method="POST" action="{{ route('categories.update', $selectedCategory) }}" class="mt-6 space-y-5">
+                    @csrf
+                    @method('PUT')
+
                     <div>
                         <label class="mb-2 block text-sm font-semibold text-[var(--color-muted)]">Name</label>
-                        <input class="forum-input" disabled value="{{ $selectedCategory->name }}">
+                        <input name="name" value="{{ old('name', $selectedCategory->name) }}" required
+                               class="forum-input" />
                     </div>
+
                     <div>
                         <label class="mb-2 block text-sm font-semibold text-[var(--color-muted)]">Slug</label>
                         <input class="forum-input forum-data" disabled value="{{ $selectedCategory->slug }}">
                     </div>
+
                     <div>
                         <label class="mb-2 block text-sm font-semibold text-[var(--color-muted)]">Description</label>
-                        <textarea class="forum-textarea min-h-32" disabled>{{ $selectedCategory->description }}</textarea>
+                        <textarea name="description" rows="5" class="forum-textarea min-h-32">{{ old('description', $selectedCategory->description) }}</textarea>
                     </div>
+
                     <div class="flex items-center justify-between text-sm text-[var(--color-muted)]">
                         <span>Current threads</span>
                         <span class="forum-data">{{ $selectedCategory->threads_count }}</span>
                     </div>
+
                     <div class="forum-divider pt-4">
-                        <span class="forum-btn-disabled w-full">Save category</span>
+                        <button type="submit" class="forum-btn w-full">Save category</button>
                     </div>
-                </div>
+                </form>
             @else
                 <p class="mt-4 text-[var(--color-muted)]">Select a category from the list to preview its management form.</p>
             @endif

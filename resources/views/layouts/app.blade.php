@@ -37,7 +37,7 @@
             </div>
             <nav class="flex flex-wrap gap-4">
                 <a href="{{ route('home') }}" class="transition hover:text-[var(--color-primary)]">Discussions</a>
-                <a href="{{ route('admin.categories') }}" class="transition hover:text-[var(--color-primary)]">Categories</a>
+                <a href="{{ route('categories.index') }}" class="transition hover:text-[var(--color-primary)]">Categories</a>
                 <a href="{{ route('admin.users') }}" class="transition hover:text-[var(--color-primary)]">Members</a>
                 <a href="{{ route('moderation.flags') }}" class="transition hover:text-[var(--color-primary)]">Moderation</a>
             </nav>
