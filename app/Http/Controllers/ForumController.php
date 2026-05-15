@@ -112,31 +112,46 @@ class ForumController extends Controller
         ]);
     }
 
-    public function notifications(): View
+           public function notifications(): View
     {
-        $user = auth()->user() ?? User::query()->with('notifications')->latest()->first();
+        $user = auth()->user();
 
-        $notifications = $user
-            ? $user->notifications()->latest()->paginate(12)
-            : Notification::query()->latest()->paginate(12);
+        if (!$user) {
+            return view('forum.notifications.index', [
+                'notificationOwner' => null,
+                'notifications' => collect(),
+            ]);
+        }
+
+        $notifications = $user->notifications()
+            ->latest()
+            ->paginate(15);
 
         return view('forum.notifications.index', [
             'notificationOwner' => $user,
-            'notifications' => $notifications,
+            'notifications'     => $notifications,
         ]);
     }
-
     public function moderation(): View
     {
+        $user = auth()->user();
+
         $flags = Flag::query()
-            ->with(['post.user', 'post.thread.category', 'reporter', 'resolver'])
+            ->with([
+                'post.user', 
+                'post.thread.category', 
+                'reporter', 
+                'resolver'
+            ])
             ->latest()
-            ->paginate(8);
+            ->paginate(10);
 
         return view('forum.moderation.index', [
-            'flags' => $flags,
-            'pendingCount' => Flag::query()->where('status', 'pending')->count(),
-            'resolvedCount' => Flag::query()->where('status', 'resolved')->count(),
+            'flags'         => $flags,
+            'pendingCount'  => Flag::where('status', 'pending')->count(),
+            'resolvedCount' => Flag::where('status', 'resolved')->count(),
+            'canModerate'   => $user && ($user->isAdmin() || $user->isModerator()), // This is key
+            'currentUser'   => $user,
         ]);
     }
 }

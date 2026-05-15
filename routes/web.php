@@ -19,7 +19,7 @@ Route::get('/moderation/flags', [ForumController::class, 'moderation'])->name('m
 Route::get('/members/{user:username}', [CommunityController::class, 'show'])->name('members.show');
 Route::get('/settings/profile', [CommunityController::class, 'settings'])->name('settings.profile');
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
     Route::get('/admin/categories', [AdminController::class, 'categories'])->name('admin.categories');
 });

@@ -14,75 +14,25 @@ class PostController extends Controller
 {
     public function store(Request $request, Thread $thread): RedirectResponse
     {
-        $request->validate(['body' => 'required|min:3']);
+        $request->validate([
+            'body' => 'required|min:3|max:2000',
+        ]);
 
         Post::create([
-            'body' => $request->body,
+            'body'      => $request->body,
             'thread_id' => $thread->id,
-            'user_id' => auth()->id(),
+            'user_id'   => auth()->id(),
         ]);
 
         return back()->with('success', 'Reply posted successfully!');
     }
 
-    public function edit(Post $post): View
-    {
-        $this->ensureOwner($post);
-
-        $post->loadMissing(['thread.category', 'user']);
-
-        return view('forum.posts.edit', [
-            'post' => $post,
-        ]);
-    }
-
-    public function update(Request $request, Post $post): RedirectResponse
-    {
-        $this->ensureOwner($post);
-
-        $validated = $request->validate([
-            'body' => ['required', 'string', 'min:3'],
-        ]);
-
-        $post->update([
-            'body' => $validated['body'],
-            'is_edited' => true,
-            'edited_at' => Carbon::now(),
-        ]);
-
-        return redirect()
-            ->route('threads.show', $post->thread->slug)
-            ->with('success', 'Reply updated successfully.');
-    }
-
-    public function confirmDelete(Post $post): View
-    {
-        $this->ensureOwner($post);
-
-        $post->loadMissing(['thread.category']);
-
-        return view('forum.posts.confirm-delete', [
-            'post' => $post,
-        ]);
-    }
-
-    public function destroy(Post $post): RedirectResponse
-    {
-        $this->ensureOwner($post);
-
-        $threadSlug = $post->thread->slug;
-        $post->delete();
-
-        return redirect()
-            ->route('threads.show', $threadSlug)
-            ->with('success', 'Reply deleted successfully.');
-    }
-
     public function report(Post $post): View
     {
-        abort_if((int) $post->user_id === (int) auth()->id(), 403);
+        // Prevent self-reporting
+        abort_if($post->user_id === auth()->id(), 403, "You cannot report your own post.");
 
-        $post->loadMissing(['thread.category', 'user']);
+        $post->load(['thread.category', 'user']);
 
         return view('forum.posts.report', [
             'post' => $post,
@@ -91,17 +41,17 @@ class PostController extends Controller
 
     public function storeReport(Request $request, Post $post): RedirectResponse
     {
-        abort_if((int) $post->user_id === (int) auth()->id(), 403);
+        abort_if($post->user_id === auth()->id(), 403);
 
         $validated = $request->validate([
-            'reason' => ['required', 'in:spam,harassment,misinformation,inappropriate,other'],
+            'reason' => 'required|in:spam,harassment,misinformation,inappropriate,other',
         ]);
 
         Flag::updateOrCreate(
             [
-                'post_id' => $post->id,
+                'post_id'     => $post->id,
                 'reported_by' => auth()->id(),
-                'status' => 'pending',
+                'status'      => 'pending',
             ],
             [
                 'reason' => $validated['reason'],
@@ -109,12 +59,37 @@ class PostController extends Controller
         );
 
         return redirect()
-            ->route('threads.show', $post->thread->slug)
-            ->with('success', 'Report submitted for moderator review.');
+            ->route('threads.show', $post->thread)
+            ->with('success', 'Report submitted. Thank you for helping keep the community safe.');
     }
 
-    private function ensureOwner(Post $post): void
+    // ================== Moderation Actions (For Admins & Moderators) ==================
+
+    public function destroy(Post $post): RedirectResponse
     {
-        abort_if((int) $post->user_id !== (int) auth()->id(), 403);
+        if (!auth()->user()->isModerator() && !auth()->user()->isAdmin()) {
+            abort(403, 'Only moderators can delete posts.');
+        }
+
+        $threadSlug = $post->thread->slug ?? $post->thread_id;
+        $post->delete();
+
+        return redirect()
+            ->route('threads.show', $threadSlug)
+            ->with('success', 'Post deleted successfully.');
+    }
+
+    public function resolveFlag(Flag $flag): RedirectResponse
+    {
+        if (!auth()->user()->isModerator() && !auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $flag->update([
+            'status'      => 'resolved',
+            'resolver_id' => auth()->id(),
+        ]);
+
+        return back()->with('success', 'Flag has been resolved.');
     }
 }
