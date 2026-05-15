@@ -15,6 +15,7 @@ class Post extends Model
         'thread_id',
         'user_id',
         'body',
+        'parent_id',
         'is_edited',
         'edited_at',
         'vote_score',
@@ -33,6 +34,16 @@ class Post extends Model
     public function thread(): BelongsTo
     {
         return $this->belongsTo(Thread::class);
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Post::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(Post::class, 'parent_id')->orderBy('created_at');
     }
 
     public function user(): BelongsTo

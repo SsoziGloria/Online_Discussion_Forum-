@@ -14,15 +14,35 @@ class PostController extends Controller
 {
     public function store(Request $request, Thread $thread): RedirectResponse
     {
-        $request->validate(['body' => 'required|min:3']);
-
-        Post::create([
-            'body' => $request->body,
-            'thread_id' => $thread->id,
-            'user_id' => auth()->id(),
+        $validated = $request->validate([
+            'body' => 'required|min:1',
+            'parent_id' => 'nullable|exists:posts,id',
         ]);
 
-        return back()->with('success', 'Reply posted successfully!');
+        // if parent_id is provided, ensure it belongs to the same thread
+        if (!empty($validated['parent_id'])) {
+            $parent = Post::find($validated['parent_id']);
+            if (!$parent || $parent->thread_id !== $thread->id) {
+                return back()->withErrors(['parent_id' => 'Invalid parent post provided.'])->withInput();
+            }
+        }
+
+        try {
+            Post::create([
+                'body' => $validated['body'],
+                'thread_id' => $thread->id,
+                'user_id' => auth()->id(),
+                'parent_id' => $validated['parent_id'] ?? null,
+            ]);
+
+            return back()->with('success', 'Reply posted successfully!');
+        } catch (\Throwable $e) {
+            logger()->error('PostController@store error: '.$e->getMessage(), [
+                'exception' => $e,
+            ]);
+
+            return back()->withInput()->with('error', 'Could not save reply — server error. Please try again.');
+        }
     }
 
     public function edit(Post $post): View

@@ -58,6 +58,26 @@ class CommunityController extends Controller
         ]);
     }
 
+    public function index(): View
+    {
+        $query = request('q', '');
+
+        $members = User::query()
+            ->withCount(['threads', 'posts', 'warnings'])
+            ->when($query, fn ($queryBuilder) => $queryBuilder->where(function ($query) use ($query) {
+                $query->where('username', 'like', '%'.request('q').'%')
+                    ->orWhere('display_name', 'like', '%'.request('q').'%');
+            }))
+            ->latest()
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('forum.members.index', [
+            'members' => $members,
+            'query' => $query,
+        ]);
+    }
+
     public function settings(): View
     {
         $user = auth()->user() ?? User::query()->latest()->first();
@@ -67,3 +87,6 @@ class CommunityController extends Controller
         ]);
     }
 }
+
+
+

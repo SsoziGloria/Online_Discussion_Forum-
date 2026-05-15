@@ -7,7 +7,7 @@
             <div class="hidden items-center gap-5 text-sm font-semibold text-[var(--color-muted)] md:flex">
                 <a href="{{ route('home') }}" class="{{ request()->routeIs('home', 'categories.show', 'threads.show') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)]' }}">Discussions</a>
                 <a href="{{ route('categories.index') }}" class="{{ request()->routeIs('categories.index', 'categories.show') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)]' }}">Categories</a>
-                <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users', 'members.show', 'settings.profile') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)]' }}">Members</a>
+                <a href="{{ route('members.index') }}" class="{{ request()->routeIs('members.index', 'members.show', 'settings.profile') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)]' }}">Members</a>
                 <a href="{{ route('moderation.flags') }}" class="{{ request()->routeIs('moderation.flags') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)]' }}">Moderation</a>
             </div>
         </div>
@@ -48,3 +48,7 @@
         </div>
     </div>
 </nav>
+
+
+
+

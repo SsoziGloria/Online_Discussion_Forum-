@@ -26,6 +26,22 @@
             </div>
         @endif
 
+        @if (session('error'))
+            <div class="forum-banner-error mb-6 text-red-700 bg-red-100 rounded-md p-3">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="forum-banner-error mb-6 text-red-700 bg-red-100 rounded-md p-3">
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         @yield('content')
     </main>
 
@@ -43,5 +59,6 @@
             </nav>
         </div>
     </footer>
+    @stack('scripts')
 </body>
 </html>

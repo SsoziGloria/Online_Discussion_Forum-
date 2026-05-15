@@ -60,4 +60,14 @@ class Kernel extends HttpKernel
         // Custom middleware for role-based authentication
         'role' => \App\Http\Middleware\CheckRole::class,
     ];
+
+    /**
+     * Backwards-compatible route middleware mapping.
+     * Some runtime environments or older caches may still look for
+     * the `$routeMiddleware` property — provide it to avoid
+     * "Target class [role] does not exist" errors.
+     */
+    protected $routeMiddleware = [
+        'role' => \App\Http\Middleware\CheckRole::class,
+    ];
 }

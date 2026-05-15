@@ -16,6 +16,7 @@ Route::get('/search', [ForumController::class, 'search'])->name('search');
 Route::get('/notifications', [ForumController::class, 'notifications'])->name('notifications.index');
 Route::get('/moderation/flags', [ForumController::class, 'moderation'])->name('moderation.flags');
 
+Route::get('/members', [CommunityController::class, 'index'])->name('members.index');
 Route::get('/members/{user:username}', [CommunityController::class, 'show'])->name('members.show');
 Route::get('/settings/profile', [CommunityController::class, 'settings'])->name('settings.profile');
 
