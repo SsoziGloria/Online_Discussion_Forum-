@@ -26,6 +26,18 @@
             </div>
         @endif
 
+        @if (session('error'))
+            <div class="forum-banner-error mb-6">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if (session('info'))
+            <div class="forum-banner-info mb-6">
+                {{ session('info') }}
+            </div>
+        @endif
+
         @yield('content')
     </main>
 

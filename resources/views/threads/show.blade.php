@@ -21,9 +21,9 @@
 
         <!-- Replies -->
         <div class="bg-white rounded-3xl shadow-xl p-10">
-            <h2 class="text-2xl font-semibold mb-8">Replies ({{ $thread->posts->count() }})</h2>
+            <h2 class="text-2xl font-semibold mb-8">Replies ({{ $thread->posts->whereNull('parent_id')->where('is_opening', false)->count() }})</h2>
 
-            @foreach($thread->posts->whereNull('parent_id') as $post)
+            @foreach($thread->posts->whereNull('parent_id')->where('is_opening', false) as $post)
                 @include('threads.partials.post', ['post' => $post, 'thread' => $thread])
             @endforeach
 

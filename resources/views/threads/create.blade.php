@@ -21,8 +21,13 @@
                                 class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-lg">
                             <option value="">Select a category</option>
                             @foreach($categories as $optionCategory)
-                                <option value="{{ $optionCategory->id }}" {{ old('category_id') == $optionCategory->id ? 'selected' : '' }}>
+                                <option value="{{ $optionCategory->id }}"
+                                        {{ old('category_id') == $optionCategory->id ? 'selected' : '' }}
+                                        {{ $optionCategory->is_locked ? 'disabled' : '' }}>
                                     {{ $optionCategory->name }}
+                                    @if($optionCategory->is_locked)
+                                        (Locked)
+                                    @endif
                                 </option>
                             @endforeach
                         </select>

@@ -14,11 +14,13 @@ class Category extends Model
         'name',
         'slug',
         'description',
-        'thread_count'
+        'thread_count',
+        'is_locked',
     ];
 
     protected $casts = [
-        'thread_count' => 'integer'
+        'thread_count' => 'integer',
+        'is_locked' => 'boolean',
     ];
 
     public function getRouteKeyName()

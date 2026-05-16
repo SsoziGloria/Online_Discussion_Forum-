@@ -16,6 +16,7 @@ class Post extends Model
         'user_id',
         'body',
         'parent_id',
+        'is_opening',
         'is_edited',
         'edited_at',
         'vote_score',
@@ -24,6 +25,7 @@ class Post extends Model
     protected function casts(): array
     {
         return [
+            'is_opening' => 'boolean',
             'is_edited' => 'boolean',
             'edited_at' => 'datetime',
         ];

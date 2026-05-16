@@ -11,7 +11,14 @@ use App\Http\Controllers\ThreadController;
 
 
 Route::get('/', [ForumController::class, 'home'])->name('home');
-Route::get('/threads/create', [ThreadController::class, 'create'])->name('threads.create');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/threads/create', [ThreadController::class, 'create'])->name('threads.create');
+    Route::post('/threads', [ThreadController::class, 'store'])->name('threads.store');
+
+    Route::prefix('categories/{category}')->group(function () {
+        Route::get('threads/create', [ThreadController::class, 'create'])->name('categories.threads.create');
+    });
+});
 Route::get('/search', [ForumController::class, 'search'])->name('search');
 Route::get('/notifications', [ForumController::class, 'notifications'])->name('notifications.index');
 Route::get('/moderation/flags', [ForumController::class, 'moderation'])->name('moderation.flags');
@@ -42,13 +49,7 @@ Route::resource('categories', CategoryController::class)->only([
     'index', 'show', 'create', 'store', 'edit', 'update', 'destroy'
 ]);
 
-// Thread Routes (within categories)
-Route::prefix('categories/{category}')->group(function () {
-    Route::get('threads/create', [ThreadController::class, 'create'])->name('categories.threads.create');
-});
-
-Route::post('/threads', [ThreadController::class, 'store'])->name('threads.store');
-
+// Thread Routes
 Route::resource('threads', ThreadController::class)->except(['create', 'store']);
 
 // Post Routes
