@@ -46,15 +46,21 @@
                             </div>
                         </div>
                         <div class="flex min-w-44 flex-col gap-3">
-                            <span class="forum-btn-disabled text-center">Dismiss flag</span>
-                            <span class="forum-btn-disabled text-center">Delete post</span>
+                            <form method="POST" action="{{ route('flags.dismiss', $flag) }}">
+                                @csrf
+                                <button type="submit" class="forum-btn-secondary w-full">Dismiss flag</button>
+                            </form>
+                            <form method="POST" action="{{ route('flags.delete', $flag) }}">
+                                @csrf
+                                <button type="submit" class="forum-btn-danger w-full">Delete post</button>
+                            </form>
                         </div>
                     </div>
                 </article>
             @empty
                 <div class="forum-card text-center">
-                    <p class="forum-section-title">No flags in the queue</p>
-                    <p class="forum-copy mx-auto mt-3">This moderation dashboard is now connected to the `flags` table and will populate when reports exist.</p>
+                    <p class="forum-section-title">No pending reports</p>
+                    <p class="forum-copy mx-auto mt-3">There are currently no unresolved flags waiting for review.</p>
                 </div>
             @endforelse
         </div>

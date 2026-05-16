@@ -137,23 +137,69 @@ class PostController extends Controller
             'reason' => 'required|in:spam,harassment,misinformation,inappropriate,other',
         ]);
 
-        Flag::updateOrCreate(
-            [
-                'post_id'     => $post->id,
-                'reported_by' => Auth::id(),
-                'status'      => 'pending',
-            ],
-            [
-                'reason' => $validated['reason'],
-            ]
-        );
+        $alreadyFlagged = Flag::where('post_id', $post->id)
+            ->where('reported_by', Auth::id())
+            ->exists();
+
+        if ($alreadyFlagged) {
+            return back()->with('error', 'You have already reported this post.');
+        }
+
+        Flag::create([
+            'post_id'     => $post->id,
+            'reported_by' => Auth::id(),
+            'reason'      => $validated['reason'],
+            'status'      => 'pending',
+        ]);
 
         return redirect()
             ->route('threads.show', $post->thread)
-            ->with('success', 'Report submitted. Thank you for helping keep the community safe.');
+            ->with('success', 'Thank you. Our team will review this post.');
     }
 
     // ================== Moderation Actions (For Admins & Moderators) ==================
+
+    public function resolveFlag(Flag $flag): RedirectResponse
+    {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
+        if (! $user || (! $user->isModerator() && ! $user->isAdmin())) {
+            abort(403);
+        }
+
+        $flag->update([
+            'status'      => 'resolved',
+            'resolver_id' => Auth::id(),
+            'resolved_at' => Carbon::now(),
+        ]);
+
+        return back()->with('success', 'Flag dismissed and removed from the queue.');
+    }
+
+    public function deleteFlaggedPost(Flag $flag): RedirectResponse
+    {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
+        if (! $user || (! $user->isModerator() && ! $user->isAdmin())) {
+            abort(403);
+        }
+
+        $post = $flag->post;
+
+        if ($post) {
+            $post->forceDelete();
+        }
+
+        $flag->update([
+            'status'      => 'resolved',
+            'resolver_id' => Auth::id(),
+            'resolved_at' => Carbon::now(),
+        ]);
+
+        return back()->with('success', 'Post deleted and flag resolved.');
+    }
 
     public function destroy(Post $post): RedirectResponse
     {
@@ -170,22 +216,5 @@ class PostController extends Controller
         return redirect()
             ->route('threads.show', $threadSlug)
             ->with('success', 'Post deleted successfully.');
-    }
-
-    public function resolveFlag(Flag $flag): RedirectResponse
-    {
-        /** @var \App\Models\User|null $user */
-        $user = Auth::user();
-
-        if (! $user || (! $user->isModerator() && ! $user->isAdmin())) {
-            abort(403);
-        }
-
-        $flag->update([
-            'status'      => 'resolved',
-            'resolver_id' => Auth::id(),
-        ]);
-
-        return back()->with('success', 'Flag has been resolved.');
     }
 }

@@ -14,7 +14,6 @@ Route::get('/', [ForumController::class, 'home'])->name('home');
 Route::get('/threads/create', [ThreadController::class, 'create'])->name('threads.create');
 Route::get('/search', [ForumController::class, 'search'])->name('search');
 Route::get('/notifications', [ForumController::class, 'notifications'])->name('notifications.index');
-Route::get('/moderation/flags', [ForumController::class, 'moderation'])->name('moderation.flags');
 
 Route::get('/members/{user:username}', [CommunityController::class, 'show'])->name('members.show');
 Route::get('/settings/profile', [CommunityController::class, 'settings'])->name('settings.profile');
@@ -22,6 +21,7 @@ Route::get('/settings/profile', [CommunityController::class, 'settings'])->name(
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
     Route::get('/admin/categories', [AdminController::class, 'categories'])->name('admin.categories');
+    Route::get('/moderation/flags', [ForumController::class, 'moderation'])->name('moderation.flags');
 });
 
 Route::middleware('auth')->group(function () {
@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts/{post}/report', [PostController::class, 'report'])->name('posts.report');
     Route::post('/posts/{post}/report', [PostController::class, 'storeReport'])->name('posts.report.store');
     Route::post('/posts/{post}/vote', [PostController::class, 'vote'])->name('posts.vote');
+    Route::post('/flags/{flag}/dismiss', [PostController::class, 'resolveFlag'])->name('flags.dismiss');
+    Route::post('/flags/{flag}/delete', [PostController::class, 'deleteFlaggedPost'])->name('flags.delete');
     Route::get('/posts/{post}/delete', [PostController::class, 'confirmDelete'])->name('posts.delete.confirm');
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
 });

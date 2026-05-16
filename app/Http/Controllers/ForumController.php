@@ -9,6 +9,7 @@ use App\Models\Thread;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ForumController extends Controller
 {
@@ -114,7 +115,8 @@ class ForumController extends Controller
 
            public function notifications(): View
     {
-        $user = auth()->user();
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
 
         if (!$user) {
             return view('forum.notifications.index', [
@@ -134,9 +136,13 @@ class ForumController extends Controller
     }
     public function moderation(): View
     {
-        $user = auth()->user();
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
+        abort_if(! $user || (! $user->isAdmin() && ! $user->isModerator()), 403);
 
         $flags = Flag::query()
+            ->where('status', 'pending')
             ->with([
                 'post.user', 
                 'post.thread.category', 
