@@ -16,6 +16,39 @@
 
     <p class="mt-3 text-gray-700">{{ $post->body }}</p>
 
+    <div class="mt-4 flex items-center gap-3 text-sm text-gray-600">
+        <span class="font-semibold text-gray-800">Score:</span>
+        <span class="font-medium">{{ $post->vote_score }}</span>
+
+        @auth
+            @if($post->user_id !== auth()->id())
+                @php
+                    $userVote = $post->votes->firstWhere('user_id', auth()->id());
+                @endphp
+
+                <form method="POST" action="{{ route('posts.vote', $post) }}" class="inline-flex items-center gap-2">
+                    @csrf
+                    <input type="hidden" name="value" value="1">
+                    <button type="submit"
+                        class="rounded-full px-3 py-1 text-xs font-semibold transition 
+                            {{ $userVote?->value === 1 ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
+                        Upvote
+                    </button>
+                </form>
+
+                <form method="POST" action="{{ route('posts.vote', $post) }}" class="inline-flex items-center gap-2">
+                    @csrf
+                    <input type="hidden" name="value" value="-1">
+                    <button type="submit"
+                        class="rounded-full px-3 py-1 text-xs font-semibold transition 
+                            {{ $userVote?->value === -1 ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
+                        Downvote
+                    </button>
+                </form>
+            @endif
+        @endauth
+    </div>
+
     @if($post->children->isNotEmpty())
         <details class="mt-4 rounded-3xl border border-gray-200 bg-slate-50 p-4">
             <summary class="cursor-pointer text-sm font-semibold text-blue-600 hover:text-blue-700">

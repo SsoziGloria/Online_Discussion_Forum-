@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Thread;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class ThreadController extends Controller
@@ -42,7 +43,7 @@ class ThreadController extends Controller
 
         $thread = Thread::create([
             'category_id' => $request->input('category_id'),
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'title' => $request->title,
             'body' => $request->body,
             'slug' => $slug,
@@ -54,7 +55,7 @@ class ThreadController extends Controller
     public function show(Thread $thread)
     {
         $thread->load(['posts' => function ($query) {
-            $query->with(['user', 'children.user'])->orderBy('created_at');
+            $query->with(['user', 'votes', 'children.user', 'children.votes'])->orderBy('created_at');
         }]);
 
         return view('threads.show', compact('thread'));
@@ -62,7 +63,7 @@ class ThreadController extends Controller
 
     public function edit(Thread $thread)
     {
-        if ($thread->user_id !== auth()->id()) {
+        if ($thread->user_id !== Auth::id()) {
             abort(403, 'Unauthorized');
         }
         return view('threads.edit', compact('thread'));
@@ -70,7 +71,7 @@ class ThreadController extends Controller
 
     public function update(Request $request, Thread $thread)
     {
-        if ($thread->user_id !== auth()->id()) {
+        if ($thread->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -86,7 +87,7 @@ class ThreadController extends Controller
 
     public function destroy(Thread $thread)
     {
-        if ($thread->user_id !== auth()->id()) {
+        if ($thread->user_id !== Auth::id()) {
             abort(403);
         }
         $thread->delete();

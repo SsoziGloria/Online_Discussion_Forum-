@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
     Route::get('/posts/{post}/report', [PostController::class, 'report'])->name('posts.report');
     Route::post('/posts/{post}/report', [PostController::class, 'storeReport'])->name('posts.report.store');
+    Route::post('/posts/{post}/vote', [PostController::class, 'vote'])->name('posts.vote');
     Route::get('/posts/{post}/delete', [PostController::class, 'confirmDelete'])->name('posts.delete.confirm');
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
 });
