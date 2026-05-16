@@ -53,7 +53,10 @@ class ThreadController extends Controller
 
     public function show(Thread $thread)
     {
-        $thread->load('posts.user');
+        $thread->load(['posts' => function ($query) {
+            $query->with(['user', 'children.user'])->orderBy('created_at');
+        }]);
+
         return view('threads.show', compact('thread'));
     }
 

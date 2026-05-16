@@ -15,6 +15,7 @@ class Post extends Model
         'thread_id',
         'user_id',
         'body',
+        'parent_id',
         'is_edited',
         'edited_at',
         'vote_score',
@@ -48,5 +49,15 @@ class Post extends Model
     public function flags(): HasMany
     {
         return $this->hasMany(Flag::class);
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id')->orderBy('created_at');
     }
 }

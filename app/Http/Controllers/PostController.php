@@ -8,6 +8,7 @@ use App\Models\Thread;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class PostController extends Controller
@@ -15,13 +16,19 @@ class PostController extends Controller
     public function store(Request $request, Thread $thread): RedirectResponse
     {
         $request->validate([
-            'body' => 'required|min:3|max:2000',
+            'body' => 'required|min:1|max:2000',
+            'parent_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('posts', 'id')->where(fn ($query) => $query->where('thread_id', $thread->id)),
+            ],
         ]);
 
         Post::create([
             'body'      => $request->body,
             'thread_id' => $thread->id,
             'user_id'   => auth()->id(),
+            'parent_id' => $request->input('parent_id'),
         ]);
 
         return back()->with('success', 'Reply posted successfully!');

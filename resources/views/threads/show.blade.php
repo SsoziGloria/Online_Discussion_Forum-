@@ -23,25 +23,8 @@
         <div class="bg-white rounded-3xl shadow-xl p-10">
             <h2 class="text-2xl font-semibold mb-8">Replies ({{ $thread->posts->count() }})</h2>
 
-            @foreach($thread->posts as $post)
-            <div class="mb-8 pb-8 border-b last:border-b-0">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <strong class="text-gray-800">{{ $post->user->name }}</strong>
-                        <span class="text-xs text-gray-400 ml-3">{{ $post->created_at->diffForHumans() }}</span>
-                    </div>
-                    
-                    @if(auth()->check() && $post->user_id === auth()->id())
-                    <form action="{{ route('posts.destroy', $post) }}" method="POST" 
-                          onsubmit="return confirm('Delete this reply?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-red-600 hover:text-red-700 text-sm">Delete</button>
-                    </form>
-                    @endif
-                </div>
-                <p class="mt-3 text-gray-700">{{ $post->body }}</p>
-            </div>
+            @foreach($thread->posts->whereNull('parent_id') as $post)
+                @include('threads.partials.post', ['post' => $post, 'thread' => $thread])
             @endforeach
 
             <!-- Reply Form -->
@@ -52,8 +35,11 @@
                     @csrf
                     <textarea name="body" rows="5" 
                               class="w-full border border-gray-300 rounded-2xl p-5 focus:ring-2 focus:ring-emerald-500"
-                              placeholder="Write your reply here..." required></textarea>
-                    
+                              placeholder="Write your reply here..." required>{{ old('parent_id') ? '' : old('body') }}</textarea>
+                    @error('body')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+
                     <button type="submit" 
                             class="mt-5 bg-gradient-to-r from-emerald-600 to-blue-600 text-white px-10 py-3.5 rounded-2xl font-medium hover:brightness-110">
                         Post Reply
