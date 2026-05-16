@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Flag;
+use App\Models\Notification;
 use App\Models\Post;
 use App\Models\Thread;
+use App\Models\Vote;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -27,17 +31,96 @@ class PostController extends Controller
         Post::create([
             'body'      => $request->body,
             'thread_id' => $thread->id,
-            'user_id'   => auth()->id(),
+            'user_id'   => Auth::id(),
             'parent_id' => $request->input('parent_id'),
         ]);
 
         return back()->with('success', 'Reply posted successfully!');
     }
 
+    public function vote(Request $request, Post $post): RedirectResponse
+    {
+        abort_if($post->user_id === Auth::id(), 403, 'You cannot vote on your own post.');
+
+        $validated = $request->validate([
+            'value' => ['required', 'integer', Rule::in([1, -1])],
+        ]);
+
+        $value = $validated['value'];
+        $author = $post->user;
+        $existingVote = Vote::where('user_id', Auth::id())
+            ->where('post_id', $post->id)
+            ->first();
+
+        if ($existingVote) {
+            if ($existingVote->value === $value) {
+                $post->vote_score -= $value;
+                $author->reputation -= $value;
+                $existingVote->delete();
+
+                $post->save();
+                $author->save();
+
+                return back()->with('success', 'Your vote has been removed.');
+            }
+
+            $difference = $value - $existingVote->value;
+            $post->vote_score += $difference;
+            $author->reputation += $difference;
+            $existingVote->update(['value' => $value]);
+
+            $post->save();
+            $author->save();
+
+            if ($value === 1) {
+                Notification::create([
+                    'user_id' => $author->id,
+                    'type' => 'upvote',
+                    'data' => [
+                        'post_id' => $post->id,
+                        'thread_id' => $post->thread_id,
+                        'voter_id' => Auth::id(),
+                        'voter_name' => Auth::user()->name,
+                        'post_excerpt' => Str::limit($post->body, 120),
+                    ],
+                ]);
+            }
+
+            return back()->with('success', 'Your vote has been updated.');
+        }
+
+        Vote::create([
+            'user_id' => Auth::id(),
+            'post_id' => $post->id,
+            'value' => $value,
+        ]);
+
+        $post->vote_score += $value;
+        $author->reputation += $value;
+        $post->save();
+        $author->save();
+
+        if ($value === 1) {
+            Notification::create([
+                'user_id' => $author->id,
+                'type' => 'upvote',
+                'data' => [
+                    'post_id' => $post->id,
+                    'thread_id' => $post->thread_id,
+                    'voter_id' => Auth::id(),
+                    'voter_name' => Auth::user()->name,
+                    'post_excerpt' => Str::limit($post->body, 120),
+                ],
+            ]);
+        }
+
+        return back()->with('success', 'Your vote has been recorded.');
+    }
+
     public function report(Post $post): View
     {
         // Prevent self-reporting
-        abort_if($post->user_id === auth()->id(), 403, "You cannot report your own post.");
+        abort_if($post->user_id === Auth::id(), 403, "You cannot report your own post.");
 
         $post->load(['thread.category', 'user']);
 
@@ -48,7 +131,7 @@ class PostController extends Controller
 
     public function storeReport(Request $request, Post $post): RedirectResponse
     {
-        abort_if($post->user_id === auth()->id(), 403);
+        abort_if($post->user_id === Auth::id(), 403);
 
         $validated = $request->validate([
             'reason' => 'required|in:spam,harassment,misinformation,inappropriate,other',
@@ -57,7 +140,7 @@ class PostController extends Controller
         Flag::updateOrCreate(
             [
                 'post_id'     => $post->id,
-                'reported_by' => auth()->id(),
+                'reported_by' => Auth::id(),
                 'status'      => 'pending',
             ],
             [
@@ -74,7 +157,10 @@ class PostController extends Controller
 
     public function destroy(Post $post): RedirectResponse
     {
-        if (!auth()->user()->isModerator() && !auth()->user()->isAdmin()) {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
+        if (! $user || (! $user->isModerator() && ! $user->isAdmin())) {
             abort(403, 'Only moderators can delete posts.');
         }
 
@@ -88,13 +174,16 @@ class PostController extends Controller
 
     public function resolveFlag(Flag $flag): RedirectResponse
     {
-        if (!auth()->user()->isModerator() && !auth()->user()->isAdmin()) {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
+        if (! $user || (! $user->isModerator() && ! $user->isAdmin())) {
             abort(403);
         }
 
         $flag->update([
             'status'      => 'resolved',
-            'resolver_id' => auth()->id(),
+            'resolver_id' => Auth::id(),
         ]);
 
         return back()->with('success', 'Flag has been resolved.');
