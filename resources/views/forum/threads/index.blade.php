@@ -1,18 +1,15 @@
 @extends('layouts.app')
 
-@section('title', $category->name.' · DevDen')
+@section('title', 'All Threads · DevDen')
 
 @section('content')
     <section class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div>
-            <p class="forum-eyebrow">Category listing</p>
-            <h1 class="forum-title mt-2">{{ $category->name }}</h1>
-            <p class="forum-copy mt-4">{{ $category->description ?: 'Browse recent conversations and discover what members are talking about in this space.' }}</p>
+            <p class="forum-eyebrow">Thread index</p>
+            <h1 class="forum-title mt-2">All discussions</h1>
+            <p class="forum-copy mt-4">Browse the latest conversations across every category.</p>
         </div>
-        <div class="flex flex-wrap gap-3">
-            <a href="{{ route('home') }}" class="forum-btn-secondary">Back to categories</a>
-            <a href="{{ route('threads.create', $category) }}" class="forum-btn">Start a new thread</a>
-        </div>
+        <a href="{{ route('threads.create') }}" class="forum-btn">Start a discussion</a>
     </section>
 
     <section class="mt-10 space-y-4">
@@ -20,14 +17,15 @@
             <article class="forum-card grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
                 <div>
                     <div class="mb-3 flex flex-wrap items-center gap-2">
+                        <a href="{{ route('categories.show', $thread->category) }}" class="forum-tag">{{ $thread->category?->name ?? 'Uncategorized' }}</a>
                         @if ($thread->is_pinned)
-                            <span class="forum-tag">Pinned</span>
+                            <span class="forum-tag-neutral">Pinned</span>
                         @endif
                         @if ($thread->is_locked)
                             <span class="forum-tag-neutral">Locked</span>
                         @endif
                     </div>
-                    <a href="{{ route('threads.show', $thread->slug) }}" class="text-2xl font-semibold tracking-[-0.03em] text-[var(--color-text)] transition hover:text-[var(--color-primary)]">
+                    <a href="{{ route('threads.show', $thread) }}" class="text-2xl font-semibold tracking-[-0.03em] text-[var(--color-text)] transition hover:text-[var(--color-primary)]">
                         {{ $thread->title }}
                     </a>
                     <p class="mt-3 max-w-[70ch] text-base leading-7 text-[var(--color-muted)]">
@@ -46,13 +44,13 @@
                         <p class="forum-eyebrow">Replies</p>
                         <p class="forum-data mt-2 text-2xl text-[var(--color-primary)]">{{ $thread->replies_count }}</p>
                     </div>
-                    <a href="{{ route('threads.show', $thread->slug) }}" class="text-sm font-semibold text-[var(--color-primary)] transition hover:opacity-80">Read thread</a>
+                    <a href="{{ route('threads.show', $thread) }}" class="text-sm font-semibold text-[var(--color-primary)] transition hover:opacity-80">Read thread</a>
                 </div>
             </article>
         @empty
             <div class="forum-card text-center">
-                <p class="forum-section-title">No threads in this category</p>
-                <p class="forum-copy mx-auto mt-3">Once members begin posting here, the latest threads will appear in this category.</p>
+                <p class="forum-section-title">No threads yet</p>
+                <p class="forum-copy mx-auto mt-3">Create the first discussion to start the forum.</p>
             </div>
         @endforelse
     </section>

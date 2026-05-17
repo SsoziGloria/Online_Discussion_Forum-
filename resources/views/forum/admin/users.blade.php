@@ -40,7 +40,7 @@
                             </td>
                             <td class="px-6 py-5 forum-data text-sm">{{ number_format($user->reputation) }}</td>
                             <td class="px-6 py-5 text-sm text-[var(--color-muted)]">
-                                {{ $user->threads_count }} threads · {{ $user->posts_count }} replies · {{ $user->warnings_count }} warnings
+                                {{ $user->threads_count }} threads · {{ $user->replies_count }} replies · {{ $user->warnings_count }} warnings
                             </td>
                             <td class="px-6 py-5">
                                 <span class="{{ $user->is_banned ? 'text-[var(--color-danger)]' : 'text-[var(--color-success)]' }} text-sm font-semibold">

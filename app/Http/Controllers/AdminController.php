@@ -19,7 +19,10 @@ class AdminController extends Controller
         $query = trim((string) $request->string('q'));
 
         $users = User::query()
-            ->withCount(['threads', 'posts'])
+            ->withCount([
+                'threads',
+                'posts as replies_count' => fn ($posts) => $posts->where('is_opening', false),
+            ])
             ->when($query !== '', function ($builder) use ($query) {
                 $builder->where('name', 'like', "%{$query}%")
                         ->orWhere('email', 'like', "%{$query}%")
@@ -41,6 +44,10 @@ class AdminController extends Controller
             abort(403, 'Unauthorized. Admin access only.');
         }
 
+        $selectedCategory = $request->filled('category')
+            ? Category::whereKey($request->integer('category'))->first()
+            : null;
+
         $categories = Category::withCount('threads')
             ->orderByDesc('threads_count')
             ->orderBy('name')
@@ -48,6 +55,7 @@ class AdminController extends Controller
 
         return view('forum.admin.categories', [
             'categories' => $categories,
+            'selectedCategory' => $selectedCategory,
         ]);
     }
 }

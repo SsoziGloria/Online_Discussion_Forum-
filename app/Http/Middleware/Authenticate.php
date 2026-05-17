@@ -14,7 +14,7 @@ class Authenticate extends Middleware
         if (! $request->expectsJson()) {
             $route = $request->route();
 
-            if ($route && in_array($route->getName(), ['threads.create', 'categories.threads.create', 'threads.store'], true)) {
+            if ($route && in_array($route->getName(), ['threads.create', 'threads.store'], true)) {
                 $request->session()->flash('info', 'Please log in to create a new thread.');
             }
 

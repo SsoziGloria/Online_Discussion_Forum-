@@ -13,9 +13,9 @@
             <div class="flex flex-wrap gap-3">
                 <a href="{{ route('threads.create') }}" class="forum-btn">Start a discussion</a>
                 @auth
-                    <a href="{{ route('categories.create') }}" class="forum-btn-secondary">Create category</a>
+                    <a href="{{ route('admin.categories') }}" class="forum-btn-secondary">Manage categories</a>
                 @else
-                    <a href="{{ route('login') }}" class="forum-btn-secondary">Login to create category</a>
+                    <a href="{{ route('login') }}" class="forum-btn-secondary">Login to start posting</a>
                 @endauth
                 <a href="{{ route('search') }}" class="forum-btn-secondary">Search discussions</a>
             </div>

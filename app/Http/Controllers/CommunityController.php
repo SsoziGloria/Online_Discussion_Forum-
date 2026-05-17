@@ -11,12 +11,16 @@ class CommunityController extends Controller
 {
     public function show(User $user): View
     {
-        $user->loadCount(['threads', 'posts', 'warnings']);
+        $user->loadCount([
+            'threads',
+            'posts as replies_count' => fn ($posts) => $posts->where('is_opening', false),
+            'warnings',
+        ]);
 
         $recentThreads = Thread::query()
             ->whereBelongsTo($user)
             ->with('category')
-            ->withCount('posts')
+            ->withCount(['posts as replies_count' => fn ($posts) => $posts->where('is_opening', false)])
             ->latest()
             ->take(3)
             ->get()
@@ -26,7 +30,7 @@ class CommunityController extends Controller
                 'href' => route('threads.show', $thread->slug),
                 'meta' => 'Started a thread',
                 'category' => $thread->category?->name,
-                'value' => $thread->posts_count.' replies',
+                'value' => $thread->replies_count.' replies',
                 'created_at' => $thread->created_at,
             ]);
 

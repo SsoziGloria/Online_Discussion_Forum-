@@ -11,14 +11,49 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class PostController extends Controller
 {
+    public function edit(Post $post): View
+    {
+        abort_if((int) $post->user_id !== (int) Auth::id(), 403, 'You can only edit your own replies.');
+
+        $post->load(['thread.category', 'user']);
+
+        return view('forum.posts.edit', [
+            'post' => $post,
+        ]);
+    }
+
+    public function update(Request $request, Post $post): RedirectResponse
+    {
+        abort_if((int) $post->user_id !== (int) Auth::id(), 403, 'You can only edit your own replies.');
+
+        $validated = $request->validate([
+            'body' => 'required|string|min:1|max:2000',
+        ]);
+
+        $post->update([
+            'body' => $validated['body'],
+            'is_edited' => true,
+            'edited_at' => now(),
+        ]);
+
+        return redirect()
+            ->route('threads.show', $post->thread)
+            ->with('success', 'Reply updated successfully.');
+    }
+
     public function store(Request $request, Thread $thread): RedirectResponse
     {
+        if ($thread->is_locked) {
+            return back()->with('error', 'This thread is locked. New replies are disabled.');
+        }
+
         $request->validate([
             'body' => 'required|min:1|max:2000',
             'parent_id' => [
@@ -28,12 +63,19 @@ class PostController extends Controller
             ],
         ]);
 
-        Post::create([
-            'body'      => $request->body,
-            'thread_id' => $thread->id,
-            'user_id'   => Auth::id(),
-            'parent_id' => $request->input('parent_id'),
-        ]);
+        DB::transaction(function () use ($request, $thread) {
+            Post::create([
+                'body'      => $request->body,
+                'thread_id' => $thread->id,
+                'user_id'   => Auth::id(),
+                'parent_id' => $request->input('parent_id'),
+            ]);
+
+            $thread->forceFill([
+                'reply_count' => $thread->reply_count + 1,
+                'last_activity_at' => now(),
+            ])->save();
+        });
 
         return back()->with('success', 'Reply posted successfully!');
     }
@@ -80,7 +122,7 @@ class PostController extends Controller
                         'post_id' => $post->id,
                         'thread_id' => $post->thread_id,
                         'voter_id' => Auth::id(),
-                        'voter_name' => Auth::user()->name,
+                        'voter_name' => Auth::user()->display_name ?? Auth::user()->username,
                         'post_excerpt' => Str::limit($post->body, 120),
                     ],
                 ]);
@@ -108,7 +150,7 @@ class PostController extends Controller
                     'post_id' => $post->id,
                     'thread_id' => $post->thread_id,
                     'voter_id' => Auth::id(),
-                    'voter_name' => Auth::user()->name,
+                    'voter_name' => Auth::user()->display_name ?? Auth::user()->username,
                     'post_excerpt' => Str::limit($post->body, 120),
                 ],
             ]);
@@ -153,22 +195,47 @@ class PostController extends Controller
             ->with('success', 'Report submitted. Thank you for helping keep the community safe.');
     }
 
-    // ================== Moderation Actions (For Admins & Moderators) ==================
+    public function confirmDelete(Post $post): View
+    {
+        $user = Auth::user();
+        $canDelete = $user
+            && ((int) $post->user_id === (int) $user->id || $user->isModerator() || $user->isAdmin());
+
+        abort_unless($canDelete, 403, 'You are not allowed to delete this reply.');
+
+        $post->load(['thread.category', 'user']);
+
+        return view('forum.posts.confirm-delete', [
+            'post' => $post,
+        ]);
+    }
 
     public function destroy(Post $post): RedirectResponse
     {
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
 
-        if (! $user || (! $user->isModerator() && ! $user->isAdmin())) {
-            abort(403, 'Only moderators can delete posts.');
+        if (! $user) {
+            abort(403);
         }
 
-        $threadSlug = $post->thread->slug ?? $post->thread_id;
-        $post->delete();
+        $canDelete = (int) $post->user_id === (int) $user->id || $user->isModerator() || $user->isAdmin();
+
+        abort_unless($canDelete, 403, 'You are not allowed to delete this reply.');
+
+        $thread = null;
+
+        DB::transaction(function () use ($post, &$thread) {
+            $thread = $post->thread;
+            $post->delete();
+
+            if (! $post->is_opening) {
+                $thread->decrement('reply_count');
+            }
+        });
 
         return redirect()
-            ->route('threads.show', $threadSlug)
+            ->route('threads.show', $thread)
             ->with('success', 'Post deleted successfully.');
     }
 

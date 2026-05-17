@@ -42,7 +42,7 @@
                     <div class="mt-4 flex flex-wrap gap-3 text-sm text-[var(--color-muted)]">
                         <span>{{ $thread->user?->display_name ?? $thread->user?->username ?? 'Unknown member' }}</span>
                         <span>·</span>
-                        <span>{{ $thread->posts_count }} replies</span>
+                        <span>{{ $thread->replies_count }} replies</span>
                     </div>
                 </article>
             @empty

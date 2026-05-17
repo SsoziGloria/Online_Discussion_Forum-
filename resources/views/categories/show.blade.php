@@ -17,7 +17,7 @@
             
             <div class="flex space-x-3">
                 @auth
-                    <a href="{{ route('categories.threads.create', $category) }}" 
+                    <a href="{{ route('threads.create', $category) }}" 
                        class="bg-white text-blue-600 hover:bg-blue-50 font-semibold py-2 px-6 rounded-lg transition duration-200 shadow-md">
                         + New Thread
                     </a>
@@ -90,7 +90,7 @@
                                     👤 By {{ $thread->user ? $thread->user->username : 'Deleted User' }}
                                 </span>
                                 <span>
-                                    💬 {{ $thread->posts_count ?? 0 }} replies
+                                    💬 {{ $thread->replies_count ?? 0 }} replies
                                 </span>
                                 <span>
                                     ⭐ {{ $thread->vote_score ?? 0 }} votes
@@ -116,7 +116,7 @@
             <div class="bg-white rounded-lg shadow-md p-8 text-center">
                 <p class="text-gray-500 text-lg mb-4">No threads in this category yet.</p>
                 @auth
-                    <a href="{{ route('categories.threads.create', $category) }}" 
+                    <a href="{{ route('threads.create', $category) }}" 
                        class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition">
                         Be the first to create a thread!
                     </a>

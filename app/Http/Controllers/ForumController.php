@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Flag;
-use App\Models\Notification;
+use App\Models\Post;
 use App\Models\Thread;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
@@ -18,8 +18,8 @@ class ForumController extends Controller
             ->withCount('threads')
             ->with([
                 'threads' => fn ($query) => $query
-                    ->with(['user', 'posts'])
-                    ->withCount('posts')
+                    ->with('user')
+                    ->withCount(['posts as replies_count' => fn ($posts) => $posts->where('is_opening', false)])
                     ->latest('last_activity_at')
                     ->latest()
                     ->take(1),
@@ -33,7 +33,7 @@ class ForumController extends Controller
             'stats' => [
                 'categories' => Category::count(),
                 'threads' => Thread::count(),
-                'posts' => \App\Models\Post::count(),
+                'posts' => Post::query()->where('is_opening', false)->count(),
                 'members' => User::count(),
             ],
         ]);
@@ -44,7 +44,7 @@ class ForumController extends Controller
         $threads = Thread::query()
             ->whereBelongsTo($category)
             ->with(['user', 'category'])
-            ->withCount('posts')
+            ->withCount(['posts as replies_count' => fn ($posts) => $posts->where('is_opening', false)])
             ->orderByDesc('is_pinned')
             ->latest('last_activity_at')
             ->latest()
@@ -56,43 +56,13 @@ class ForumController extends Controller
         ]);
     }
 
-    public function thread(Thread $thread): View
-    {
-        $thread->load([
-            'category',
-            'user',
-            'posts' => fn ($query) => $query->with('user')->orderBy('created_at'),
-        ]);
-
-        $relatedThreads = Thread::query()
-            ->where('category_id', $thread->category_id)
-            ->whereKeyNot($thread->id)
-            ->with('user')
-            ->withCount('posts')
-            ->latest('last_activity_at')
-            ->take(3)
-            ->get();
-
-        return view('forum.threads.show', [
-            'thread' => $thread,
-            'relatedThreads' => $relatedThreads,
-        ]);
-    }
-
-    public function create(): View
-    {
-        return view('forum.threads.create', [
-            'categories' => Category::query()->orderBy('name')->get(),
-        ]);
-    }
-
     public function search(Request $request): View
     {
         $query = trim((string) $request->string('q'));
 
         $results = Thread::query()
             ->with(['user', 'category'])
-            ->withCount('posts')
+            ->withCount(['posts as replies_count' => fn ($posts) => $posts->where('is_opening', false)])
             ->when($query !== '', function ($builder) use ($query) {
                 $builder->where(function ($inner) use ($query) {
                     $inner->where('title', 'like', "%{$query}%")

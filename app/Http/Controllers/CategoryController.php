@@ -34,14 +34,14 @@ class CategoryController extends Controller
     {
         $threads = $category->threads()
             ->with(['user', 'posts'])
-            ->withCount('posts')
+            ->withCount(['posts as replies_count' => fn ($posts) => $posts->where('is_opening', false)])
             ->when($request->filled('sort'), function($query) use ($request) {
                 if ($request->sort === 'latest') {
                     $query->latest('created_at');
                 } elseif ($request->sort === 'oldest') {
                     $query->oldest('created_at');
                 } elseif ($request->sort === 'most_replies') {
-                    $query->withCount('posts')->orderBy('posts_count', 'desc');
+                    $query->orderBy('replies_count', 'desc');
                 } elseif ($request->sort === 'most_votes') {
                     $query->orderBy('vote_score', 'desc');
                 }

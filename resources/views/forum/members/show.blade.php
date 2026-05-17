@@ -34,7 +34,7 @@
             <div>
                 <div class="flex items-center justify-between">
                     <span class="text-sm text-[var(--color-muted)]">Replies</span>
-                    <span class="forum-data text-sm">{{ $member->posts_count }}</span>
+                    <span class="forum-data text-sm">{{ $member->replies_count }}</span>
                 </div>
             </div>
             <div>
