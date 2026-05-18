@@ -25,6 +25,7 @@
 /vendor
 _ide_helper.php
 boost.json
+DESIGN.md
 Homestead.json
 Homestead.yaml
 skills-lock.json

@@ -1,55 +1,57 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Category')
+@section('title', 'Edit category · DevDen')
 
 @section('content')
-<div class="container mx-auto px-4 py-8 max-w-2xl">
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">Edit Category: {{ $category->name }}</h1>
-        
-        <form action="{{ route('categories.update', $category) }}" method="POST">
+    <section class="mx-auto max-w-3xl">
+        <div class="mb-8">
+            <p class="forum-eyebrow">Category settings</p>
+            <h1 class="forum-title mt-2">Edit {{ $category->name }}</h1>
+            <p class="forum-copy mt-4">Update the category details to keep labels and descriptions clear for the community.</p>
+        </div>
+
+        @if ($errors->any())
+            <div class="forum-banner-danger mb-6">Please fix the highlighted fields and try again.</div>
+        @endif
+
+        <form action="{{ route('categories.update', $category) }}" method="POST" class="forum-card space-y-6">
             @csrf
             @method('PUT')
-            
-            <div class="mb-4">
-                <label for="name" class="block text-gray-700 font-semibold mb-2">
-                    Category Name <span class="text-red-500">*</span>
-                </label>
-                <input type="text" 
-                       name="name" 
-                       id="name" 
-                       value="{{ old('name', $category->name) }}"
-                       class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('name') border-red-500 @enderror"
-                       required>
+
+            <div>
+                <label for="name" class="forum-label">Category name</label>
+                <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    value="{{ old('name', $category->name) }}"
+                    class="forum-input @error('name') border-[var(--color-danger)] @enderror"
+                    required
+                >
                 @error('name')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="forum-status-error mt-2">{{ $message }}</p>
                 @enderror
             </div>
-            
-            <div class="mb-6">
-                <label for="description" class="block text-gray-700 font-semibold mb-2">
-                    Description
-                </label>
-                <textarea name="description" 
-                          id="description" 
-                          rows="4"
-                          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description', $category->description) }}</textarea>
+
+            <div>
+                <label for="description" class="forum-label">Description</label>
+                <textarea
+                    name="description"
+                    id="description"
+                    rows="5"
+                    class="forum-textarea @error('description') border-[var(--color-danger)] @enderror"
+                >{{ old('description', $category->description) }}</textarea>
                 @error('description')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="forum-status-error mt-2">{{ $message }}</p>
                 @enderror
             </div>
-            
-            <div class="flex justify-end space-x-3">
-                <a href="{{ route('categories.show', $category) }}" 
-                   class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                    Cancel
-                </a>
-                <button type="submit" 
-                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition">
-                    Update Category
-                </button>
+
+            <div class="forum-divider pt-4">
+                <div class="flex flex-wrap items-center justify-end gap-3">
+                    <a href="{{ route('categories.show', $category) }}" class="forum-btn-secondary">Cancel</a>
+                    <button type="submit" class="forum-btn">Save category</button>
+                </div>
             </div>
         </form>
-    </div>
-</div>
+    </section>
 @endsection

@@ -46,7 +46,18 @@
                         <p class="forum-eyebrow">Replies</p>
                         <p class="forum-data mt-2 text-2xl text-[var(--color-primary)]">{{ $thread->replies_count }}</p>
                     </div>
-                    <a href="{{ route('threads.show', $thread->slug) }}" class="text-sm font-semibold text-[var(--color-primary)] transition hover:opacity-80">Read thread</a>
+                    <div class="flex flex-wrap items-center justify-end gap-2">
+                        <a href="{{ route('threads.show', $thread->slug) }}" class="text-sm font-semibold text-[var(--color-primary)] transition hover:opacity-80">Read thread</a>
+                        @if (auth()->user()?->isAdmin())
+                            <form method="POST" action="{{ route('threads.destroy', $thread) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="forum-action-link-danger" onclick="return confirm('Delete this thread and all its replies?')">
+                                    Delete
+                                </button>
+                            </form>
+                        @endif
+                    </div>
                 </div>
             </article>
         @empty

@@ -171,7 +171,10 @@ class ThreadController extends Controller
 
     public function destroy(Thread $thread): RedirectResponse
     {
-        if ($thread->user_id !== Auth::id()) {
+        $actor = Auth::user();
+        $canDelete = $actor && ((int) $thread->user_id === (int) $actor->id || $actor->isAdmin());
+
+        if (! $canDelete) {
             abort(403);
         }
 

@@ -38,9 +38,11 @@
                     </div>
 
                     @auth
-                        @if ((int) $thread->user_id === (int) auth()->id())
+                        @if ((int) $thread->user_id === (int) auth()->id() || auth()->user()?->isAdmin())
                             <div class="flex flex-wrap gap-2">
-                                <a href="{{ route('threads.edit', $thread) }}" class="forum-action-link">Edit thread</a>
+                                @if ((int) $thread->user_id === (int) auth()->id())
+                                    <a href="{{ route('threads.edit', $thread) }}" class="forum-action-link">Edit thread</a>
+                                @endif
                                 <form method="POST" action="{{ route('threads.destroy', $thread) }}">
                                     @csrf
                                     @method('DELETE')

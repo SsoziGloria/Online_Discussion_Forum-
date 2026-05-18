@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Thread;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
 
 class CommunityController extends Controller
@@ -69,5 +70,27 @@ class CommunityController extends Controller
         return view('forum.members.settings', [
             'member' => $user,
         ]);
+    }
+
+    public function toggleBan(User $user): RedirectResponse
+    {
+        $actor = auth()->user();
+
+        if (! $actor || ! $actor->isAdmin()) {
+            abort(403);
+        }
+
+        if ((int) $actor->id === (int) $user->id) {
+            return back()->with('error', __('forum.member.messages.self_ban_forbidden'));
+        }
+
+        $user->update([
+            'is_banned' => ! $user->is_banned,
+            'banned_at' => $user->is_banned ? null : now(),
+        ]);
+
+        return back()->with('success', $user->is_banned
+            ? __('forum.member.messages.banned')
+            : __('forum.member.messages.unbanned'));
     }
 }

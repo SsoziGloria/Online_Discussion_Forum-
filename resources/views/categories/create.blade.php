@@ -1,58 +1,60 @@
 @extends('layouts.app')
 
-@section('title', 'Create Category')
+@section('title', 'Create category · DevDen')
 
 @section('content')
-<div class="container mx-auto px-4 py-8 max-w-2xl">
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">Create New Category</h1>
-        
-        <form action="{{ route('categories.store') }}" method="POST">
+    <section class="mx-auto max-w-3xl">
+        <div class="mb-8">
+            <p class="forum-eyebrow">Category setup</p>
+            <h1 class="forum-title mt-2">Create a category</h1>
+            <p class="forum-copy mt-4">Add a clear name and description so members can quickly understand what conversations belong here.</p>
+        </div>
+
+        @if ($errors->any())
+            <div class="forum-banner-danger mb-6">Please fix the highlighted fields and try again.</div>
+        @endif
+
+        <form action="{{ route('categories.store') }}" method="POST" class="forum-card space-y-6">
             @csrf
-            
-            <div class="mb-4">
-                <label for="name" class="block text-gray-700 font-semibold mb-2">
-                    Category Name <span class="text-red-500">*</span>
-                </label>
-                <input type="text" 
-                       name="name" 
-                       id="name" 
-                       value="{{ old('name') }}"
-                       class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('name') border-red-500 @enderror"
-                       placeholder="e.g., Technology, Gaming, General Discussion"
-                       required>
+
+            <div>
+                <label for="name" class="forum-label">Category name</label>
+                <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    value="{{ old('name') }}"
+                    class="forum-input @error('name') border-[var(--color-danger)] @enderror"
+                    placeholder="e.g., Technology, Gaming, General discussion"
+                    required
+                >
                 @error('name')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="forum-status-error mt-2">{{ $message }}</p>
                 @enderror
-                <p class="text-gray-500 text-sm mt-1">3-100 characters. Must be unique.</p>
+                <p class="mt-2 text-sm text-[var(--color-muted)]">3 to 100 characters and unique across categories.</p>
             </div>
-            
-            <div class="mb-6">
-                <label for="description" class="block text-gray-700 font-semibold mb-2">
-                    Description
-                </label>
-                <textarea name="description" 
-                          id="description" 
-                          rows="4"
-                          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('description') border-red-500 @enderror"
-                          placeholder="Briefly describe what this category is about...">{{ old('description') }}</textarea>
+
+            <div>
+                <label for="description" class="forum-label">Description</label>
+                <textarea
+                    name="description"
+                    id="description"
+                    rows="5"
+                    class="forum-textarea @error('description') border-[var(--color-danger)] @enderror"
+                    placeholder="Briefly describe what this category is about."
+                >{{ old('description') }}</textarea>
                 @error('description')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="forum-status-error mt-2">{{ $message }}</p>
                 @enderror
-                <p class="text-gray-500 text-sm mt-1">Optional. Max 500 characters.</p>
+                <p class="mt-2 text-sm text-[var(--color-muted)]">Optional. Keep it short and specific.</p>
             </div>
-            
-            <div class="flex justify-end space-x-3">
-                <a href="{{ route('categories.index') }}" 
-                   class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                    Cancel
-                </a>
-                <button type="submit" 
-                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition">
-                    Create Category
-                </button>
+
+            <div class="forum-divider pt-4">
+                <div class="flex flex-wrap items-center justify-end gap-3">
+                    <a href="{{ route('categories.index') }}" class="forum-btn-secondary">Cancel</a>
+                    <button type="submit" class="forum-btn">Create category</button>
+                </div>
             </div>
         </form>
-    </div>
-</div>
+    </section>
 @endsection

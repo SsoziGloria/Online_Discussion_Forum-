@@ -44,7 +44,7 @@
                             </td>
                             <td class="px-6 py-5">
                                 <span class="{{ $user->is_banned ? 'text-[var(--color-danger)]' : 'text-[var(--color-success)]' }} text-sm font-semibold">
-                                    {{ $user->is_banned ? 'Banned' : 'Active' }}
+                                    {{ $user->is_banned ? __('forum.member.status.banned') : __('forum.member.status.active') }}
                                 </span>
                             </td>
                         </tr>

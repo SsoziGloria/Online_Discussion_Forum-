@@ -29,6 +29,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/categories/{category:slug}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
         Route::put('/categories/{category:slug}', [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('/categories/{category:slug}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+        Route::patch('/members/{user:username}/ban', [CommunityController::class, 'toggleBan'])->name('members.ban.toggle');
     });
 
     Route::post('/threads/{thread:slug}/posts', [PostController::class, 'store'])->name('posts.store');

@@ -46,6 +46,22 @@
             <div>
                 <span class="forum-tag-neutral">{{ ucfirst($member->role) }}</span>
             </div>
+            <div>
+                <span class="{{ $member->is_banned ? 'forum-action-link-danger' : 'forum-action-link' }}">
+                    {{ $member->is_banned ? __('forum.member.status.banned') : __('forum.member.status.active') }}
+                </span>
+            </div>
+            @if (auth()->user()?->isAdmin() && (int) auth()->id() !== (int) $member->id)
+                <div class="forum-divider pt-4">
+                    <form method="POST" action="{{ route('members.ban.toggle', $member->username) }}">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit" class="{{ $member->is_banned ? 'forum-btn-secondary w-full' : 'forum-btn w-full' }}">
+                            {{ $member->is_banned ? __('forum.member.actions.unban') : __('forum.member.actions.ban') }}
+                        </button>
+                    </form>
+                </div>
+            @endif
         </aside>
     </section>
 
