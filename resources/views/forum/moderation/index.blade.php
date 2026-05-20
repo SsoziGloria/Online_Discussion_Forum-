@@ -13,8 +13,8 @@
             <p class="forum-data mt-2 text-3xl text-[var(--color-primary)]">{{ $resolvedCount }}</p>
         </div>
         <div class="forum-card">
-            <p class="forum-eyebrow">Mode</p>
-            <p class="mt-2 text-lg text-[var(--color-muted)]">Read-only moderation preview</p>
+            <p class="forum-eyebrow">Warnings</p>
+            <a href="{{ route('moderation.warnings') }}" class="mt-2 block text-lg font-semibold text-[var(--color-primary)]">Manage warnings</a>
         </div>
     </section>
 
@@ -89,7 +89,7 @@
             @empty
                 <div class="forum-card text-center">
                     <p class="forum-section-title">No flags in the queue</p>
-                    <p class="forum-copy mx-auto mt-3">This moderation dashboard is now connected to the `flags` table and will populate when reports exist.</p>
+                    <p class="forum-copy mx-auto mt-3">In case of any issues, this table will populate!</p>
                 </div>
             @endforelse
         </div>

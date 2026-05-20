@@ -93,4 +93,24 @@ class CommunityController extends Controller
             ? __('forum.member.messages.banned')
             : __('forum.member.messages.unbanned'));
     }
+
+    public function toggleRole(User $user): RedirectResponse
+    {
+        $actor = auth()->user();
+
+        if (! $actor || ! $actor->isAdmin()) {
+            abort(403);
+        }
+
+        if ((int) $actor->id === (int) $user->id) {
+            return back()->with('error', __('forum.member.messages.self_role_change_forbidden'));
+        }
+
+        $newRole = $user->role === 'moderator' ? 'user' : 'moderator';
+        $user->update(['role' => $newRole]);
+
+        return back()->with('success', $newRole === 'moderator'
+            ? __('forum.member.messages.promoted_to_moderator')
+            : __('forum.member.messages.demoted_to_user'));
+    }
 }

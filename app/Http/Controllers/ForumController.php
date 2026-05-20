@@ -107,10 +107,11 @@ class ForumController extends Controller
         $user = auth()->user();
 
         $flags = Flag::query()
+            ->where('status', 'pending')
             ->with([
-                'post.user', 
-                'post.thread.category', 
-                'reporter', 
+                'post.user',
+                'post.thread.category',
+                'reporter',
                 'resolver'
             ])
             ->latest()

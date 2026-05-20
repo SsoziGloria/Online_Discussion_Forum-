@@ -13,9 +13,16 @@
                     <p class="forum-eyebrow">Public profile</p>
                     <h1 class="mt-2 text-4xl font-extrabold tracking-[-0.04em]">{{ $member->display_name ?? $member->username }}</h1>
                     <p class="mt-1 text-base text-[var(--color-muted)]">{{ '@'.$member->username }} · joined {{ $member->created_at->format('M Y') }}</p>
-                    <p class="mt-4 max-w-[68ch] text-lg leading-8 text-[var(--color-muted)]">
-                        {{ $member->bio ?: 'This member has not added a public bio yet.' }}
-                    </p>
+                    <div class="mt-4 flex items-start gap-3">
+                        <p class="max-w-[68ch] text-lg leading-8 text-[var(--color-muted)]">
+                            {{ $member->bio ?: 'This member has not added a public bio yet.' }}
+                        </p>
+                        @if ((int) auth()->id() === (int) $member->id)
+                            <a href="{{ route('settings.profile') }}" class="mt-1 text-[var(--color-primary)] hover:text-[var(--color-primary)]/80 transition" title="Edit settings">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            </a>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -51,8 +58,17 @@
                     {{ $member->is_banned ? __('forum.member.status.banned') : __('forum.member.status.active') }}
                 </span>
             </div>
-            @if (auth()->user()?->isAdmin() && (int) auth()->id() !== (int) $member->id)
-                <div class="forum-divider pt-4">
+            @if ((auth()->user()?->isAdmin() || auth()->user()?->role === 'moderator') && (int) auth()->id() !== (int) $member->id)
+                <div class="forum-divider pt-4 space-y-2">
+                    @if (auth()->user()?->isAdmin())
+                        <form method="POST" action="{{ route('members.role.toggle', $member->username) }}">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" class="{{ $member->role === 'moderator' ? 'forum-btn-secondary w-full' : 'forum-btn w-full' }}">
+                                {{ $member->role === 'moderator' ? __('forum.member.actions.demote_to_user') : __('forum.member.actions.promote_to_moderator') }}
+                            </button>
+                        </form>
+                    @endif
                     <form method="POST" action="{{ route('members.ban.toggle', $member->username) }}">
                         @csrf
                         @method('PATCH')
@@ -91,7 +107,7 @@
             @empty
                 <div class="forum-card text-center">
                     <p class="forum-section-title">No activity yet</p>
-                    <p class="forum-copy mx-auto mt-3">The profile page is connected. Activity will appear here from `threads` and `posts` as soon as the member has records.</p>
+                    <p class="forum-copy mx-auto mt-3">In case of any activity, this table will populate!</p>
                 </div>
             @endforelse
         </div>

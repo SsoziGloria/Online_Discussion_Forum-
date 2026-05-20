@@ -7,7 +7,9 @@ use App\Http\Controllers\FlagController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ThreadController;
+use App\Http\Controllers\WarningController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ForumController::class, 'home'])->name('home');
@@ -34,10 +36,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/categories/{category:slug}', [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('/categories/{category:slug}', [CategoryController::class, 'destroy'])->name('categories.destroy');
         Route::patch('/members/{user:username}/ban', [CommunityController::class, 'toggleBan'])->name('members.ban.toggle');
+        Route::patch('/members/{user:username}/role', [CommunityController::class, 'toggleRole'])->name('members.role.toggle');
     });
 
     Route::middleware('role:moderator,admin')->group(function () {
         Route::get('/moderation/flags', [ForumController::class, 'moderation'])->name('moderation.flags');
+        Route::get('/moderation/warnings', [WarningController::class, 'index'])->name('moderation.warnings');
+        Route::post('/moderation/warnings', [WarningController::class, 'store'])->name('warnings.store');
+        Route::delete('/moderation/warnings/{warning}', [WarningController::class, 'destroy'])->name('warnings.destroy');
         Route::patch('/flags/{flag}/dismiss', [FlagController::class, 'dismiss'])->name('flags.dismiss');
         Route::delete('/flags/{flag}/delete-post', [FlagController::class, 'deletePost'])->name('flags.delete-post');
     });
@@ -55,6 +61,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
     Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     Route::get('/settings/profile', [CommunityController::class, 'settings'])->name('settings.profile');
+    Route::patch('/settings/profile', [ProfileController::class, 'update'])->name('settings.profile.update');
 
 });
 

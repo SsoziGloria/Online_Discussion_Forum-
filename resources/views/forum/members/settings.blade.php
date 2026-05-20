@@ -7,42 +7,50 @@
         <div class="mb-8">
             <p class="forum-eyebrow">Account settings</p>
             <h1 class="forum-title mt-2">Profile settings</h1>
-            <p class="forum-copy mt-4">Review the details connected to your account, including your public profile information and security settings.</p>
+            <p class="forum-copy mt-4">Update the public details connected to your account.</p>
         </div>
 
-        <div class="space-y-6">
+        <form method="POST" action="{{ route('settings.profile.update') }}" class="space-y-6">
+            @csrf
+            @method('PATCH')
+
             <section class="forum-card">
                 <h2 class="forum-section-title">Public information</h2>
                 <div class="mt-6 space-y-5">
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-[var(--color-muted)]">Display name</label>
-                        <input class="forum-input" disabled value="{{ $member?->display_name }}">
+                        <label for="name" class="mb-2 block text-sm font-semibold text-[var(--color-muted)]">Display name</label>
+                        <input id="name" name="name" class="forum-input" value="{{ old('name', $member?->name) }}" required autocomplete="name">
+                        @error('name')
+                            <p class="mt-2 text-sm text-[var(--color-danger)]">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-[var(--color-muted)]">Avatar URL</label>
-                        <input class="forum-input" disabled value="{{ $member?->avatar_url }}">
+                        <label for="email" class="mb-2 block text-sm font-semibold text-[var(--color-muted)]">Email</label>
+                        <input id="email" name="email" type="email" class="forum-input" value="{{ old('email', $member?->email) }}" required autocomplete="email">
+                        @error('email')
+                            <p class="mt-2 text-sm text-[var(--color-danger)]">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-[var(--color-muted)]">Bio</label>
-                        <textarea class="forum-textarea min-h-32" disabled>{{ $member?->bio }}</textarea>
+                        <label for="bio" class="mb-2 block text-sm font-semibold text-[var(--color-muted)]">Bio</label>
+                        <textarea id="bio" name="bio" class="forum-textarea min-h-32" rows="6">{{ old('bio', $member?->bio) }}</textarea>
+                        @error('bio')
+                            <p class="mt-2 text-sm text-[var(--color-danger)]">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
             </section>
 
-            <section class="forum-card">
-                <h2 class="forum-section-title">Account security</h2>
-                <div class="mt-6 grid gap-5">
-                    <input class="forum-input" disabled type="password" value="current-password">
-                    <input class="forum-input" disabled type="password" value="new-password">
-                    <input class="forum-input" disabled type="password" value="confirm-password">
+            <div class="forum-divider pt-4">
+                <div class="flex items-center justify-between gap-4">
+                    @if (session('status') === 'profile-updated')
+                        <p class="text-sm text-[var(--color-success)]">Saved.</p>
+                    @else
+                        <p class="text-sm text-[var(--color-muted)]">Changes will update your public profile immediately.</p>
+                    @endif
+                    <button type="submit" class="forum-btn">Save changes</button>
                 </div>
-                <div class="forum-divider mt-6 pt-4">
-                    <div class="flex items-center justify-between gap-4">
-                        <p class="text-sm text-[var(--color-muted)]">Profile updates will appear here once account editing is available.</p>
-                        <span class="forum-btn-disabled">Save changes</span>
-                    </div>
-                </div>
-            </section>
-        </div>
+            </div>
+        </form>
     </section>
 @endsection
