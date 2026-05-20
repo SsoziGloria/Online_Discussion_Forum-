@@ -34,8 +34,14 @@
             </form>
 
             @if($navUser)
-                <a href="{{ route('notifications.index') }}" class="forum-icon-button" aria-label="Notifications">
+                @php($unread = $navUser->notifications()->unread()->count())
+                <a href="{{ route('notifications.index') }}" class="forum-icon-button relative" aria-label="Notifications">
                     <span class="material-symbols-outlined {{ request()->routeIs('notifications.index') ? 'fill-1 text-[var(--color-primary)]' : '' }}">notifications</span>
+                    @if($unread > 0)
+                        <span class="absolute -top-1 -right-1 inline-flex items-center justify-center rounded-full bg-[var(--color-primary)] text-white text-[10px] w-5 h-5">
+                            {{ $unread > 9 ? '9+' : $unread }}
+                        </span>
+                    @endif
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="hidden md:block">
                     @csrf

@@ -16,7 +16,15 @@
                     @endif
                 </p>
             </div>
-            <span class="forum-btn-disabled">Mark all as read</span>
+            @if ($notificationOwner)
+                <form action="{{ route('notifications.mark-all-read') }}" method="POST" class="inline">
+                    @csrf
+                    @method('PATCH')
+                    <button type="submit" class="forum-btn">Mark all as read</button>
+                </form>
+            @else
+                <span class="forum-btn-disabled">Mark all as read</span>
+            @endif
         </div>
 
         <div class="space-y-3">
@@ -35,23 +43,56 @@
                         <p class="text-lg leading-7 text-[var(--color-text)]">
                             @php($data = $notification->data ?? [])
                             @if ($notification->type === 'reply')
-                                New reply{{ isset($data['thread']) ? ' in '.$data['thread'] : '' }}.
+                                New reply
+                                @if (isset($data['thread']))
+                                    in
+                                    @if(isset($data['thread_slug']) && $data['thread_slug'])
+                                        <a href="{{ route('threads.show', $data['thread_slug']) }}" class="font-semibold hover:underline">{{ $data['thread'] }}</a>
+                                    @else
+                                        {{ $data['thread'] }}
+                                    @endif
+                                @endif
+                                .
                             @elseif ($notification->type === 'mention')
-                                You were mentioned{{ isset($data['thread']) ? ' in '.$data['thread'] : '' }}.
+                                You were mentioned
+                                @if (isset($data['thread']))
+                                    in
+                                    @if(isset($data['thread_slug']) && $data['thread_slug'])
+                                        <a href="{{ route('threads.show', $data['thread_slug']) }}" class="font-semibold hover:underline">{{ $data['thread'] }}</a>
+                                    @else
+                                        {{ $data['thread'] }}
+                                    @endif
+                                @endif
+                                .
                             @else
-                                Your contribution received an upvote.
+                                Your contribution received an upvote
+                                @if (isset($data['thread']))
+                                    @if(isset($data['thread_slug']) && $data['thread_slug'])
+                                        in <a href="{{ route('threads.show', $data['thread_slug']) }}" class="font-semibold hover:underline">{{ $data['thread'] }}</a>
+                                    @else
+                                        in {{ $data['thread'] }}
+                                    @endif
+                                @endif
+                                .
                             @endif
                         </p>
                         <p class="mt-2 text-sm text-[var(--color-muted)]">{{ $notification->created_at->diffForHumans() }}</p>
                     </div>
-                    @unless ($notification->is_read)
-                        <span class="mt-2 h-2.5 w-2.5 rounded-full bg-[var(--color-primary)]"></span>
-                    @endunless
+                    <div class="flex items-center gap-3">
+                        @unless ($notification->is_read)
+                            <form action="{{ route('notifications.mark-read', $notification) }}" method="POST" class="inline">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="text-sm text-[var(--color-primary)] hover:underline">Mark as read</button>
+                            </form>
+                            <span class="h-2.5 w-2.5 rounded-full bg-[var(--color-primary)]"></span>
+                        @endunless
+                    </div>
                 </article>
             @empty
                 <div class="forum-card text-center">
                     <p class="forum-section-title">No notifications yet</p>
-                    <p class="forum-copy mx-auto mt-3">The page is wired to the `notifications` table and will populate as soon as records exist.</p>
+                    <p class="forum-copy mx-auto mt-3">In case of any, this table will populate!</p>
                 </div>
             @endforelse
         </div>

@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\ForumController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ThreadController;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +43,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
 
     Route::get('/notifications', [ForumController::class, 'notifications'])->name('notifications.index');
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     Route::get('/moderation/flags', [ForumController::class, 'moderation'])->name('moderation.flags');
     Route::get('/settings/profile', [CommunityController::class, 'settings'])->name('settings.profile');
 

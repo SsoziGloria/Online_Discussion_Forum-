@@ -28,4 +28,30 @@ class Notification extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // ─── Scopes ───────────────────────────────────────────────────────────────
+
+    /**
+     * Scope to only unread notifications.
+     */
+    public function scopeUnread($query)
+    {
+        return $query->where('is_read', false);
+    }
+
+    /**
+     * Scope to only read notifications.
+     */
+    public function scopeRead($query)
+    {
+        return $query->where('is_read', true);
+    }
+
+    /**
+     * Scope to only notifications of a specific type.
+     */
+    public function scopeOfType($query, string $type)
+    {
+        return $query->where('type', $type);
+    }
 }

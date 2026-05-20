@@ -8,6 +8,8 @@ use App\Models\Post;
 use App\Models\Thread;
 use App\Models\User;
 use App\Models\Vote;
+use App\Services\MentionParser;
+use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -73,8 +75,10 @@ class PostController extends Controller
             ],
         ]);
 
-        DB::transaction(function () use ($request, $thread) {
-            Post::create([
+        $post = null;
+
+        DB::transaction(function () use ($request, $thread, &$post) {
+            $post = Post::create([
                 'body' => $request->body,
                 'thread_id' => $thread->id,
                 'user_id' => Auth::id(),
@@ -86,6 +90,13 @@ class PostController extends Controller
                 'last_activity_at' => now(),
             ])->save();
         });
+
+        // Create reply notifications (thread author + parent post author)
+        NotificationService::createReplyNotification($post, $thread);
+
+        // Parse and create mention notifications
+        $mentionedUsers = MentionParser::parseMentions($post->body);
+        NotificationService::createMentionNotification($post, $mentionedUsers);
 
         return back()->with('success', 'Reply posted successfully!');
     }
@@ -124,13 +135,14 @@ class PostController extends Controller
             $post->save();
             $author->save();
 
-            if ($value === 1) {
+            if ($value === 1 && $post->user_id !== Auth::id()) {
                 Notification::create([
                     'user_id' => $author->id,
                     'type' => 'upvote',
                     'data' => [
                         'post_id' => $post->id,
                         'thread_id' => $post->thread_id,
+                        'thread_slug' => $post->thread->slug ?? null,
                         'voter_id' => Auth::id(),
                         'voter_name' => Auth::user()->display_name ?? Auth::user()->username,
                         'post_excerpt' => Str::limit($post->body, 120),
@@ -152,13 +164,14 @@ class PostController extends Controller
         $post->save();
         $author->save();
 
-        if ($value === 1) {
+        if ($value === 1 && $post->user_id !== Auth::id()) {
             Notification::create([
                 'user_id' => $author->id,
                 'type' => 'upvote',
                 'data' => [
                     'post_id' => $post->id,
                     'thread_id' => $post->thread_id,
+                    'thread_slug' => $post->thread->slug ?? null,
                     'voter_id' => Auth::id(),
                     'voter_name' => Auth::user()->display_name ?? Auth::user()->username,
                     'post_excerpt' => Str::limit($post->body, 120),
