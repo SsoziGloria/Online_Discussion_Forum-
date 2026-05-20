@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Models\Category;
+use App\Models\Flag;
 use App\Models\Thread;
 use App\Models\Post;
 use App\Policies\CategoryPolicy;
+use App\Policies\FlagPolicy;
 use App\Policies\ThreadPolicy;
 use App\Policies\PostPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -20,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Category::class => CategoryPolicy::class,
+        Flag::class => FlagPolicy::class,
         //Thread::class => ThreadPolicy::class,
         //Post::class => PostPolicy::class,
     ];
@@ -40,12 +43,12 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('admin', function ($user) {
             return $user->role === 'admin';
         });
-        
+
         // Define a gate for checking if user is verified (from SRS FR-01)
         Gate::define('verified', function ($user) {
             return $user->email_verified_at !== null;
         });
-        
+
         // Define a gate for checking if user is not banned (from SRS FR-51)
         Gate::define('not-banned', function ($user) {
             return !$user->is_banned;

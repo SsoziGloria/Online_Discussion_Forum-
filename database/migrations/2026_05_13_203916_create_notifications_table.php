@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->enum('type', ['reply', 'mention', 'upvote']);
+            $table->string('type', 50);
             $table->json('data');
             $table->boolean('is_read')->default(false);
             $table->timestamps();

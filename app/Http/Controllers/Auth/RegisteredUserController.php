@@ -45,6 +45,7 @@ class RegisteredUserController extends Controller
             'username' => $username,
             'display_name' => $name,
             'email' => $request->string('email')->toString(),
+            'avatar_url' => $this->generateAvatarUrl(),
             'password' => Hash::make($request->password),
         ]);
 
@@ -72,10 +73,15 @@ class RegisteredUserController extends Controller
         $suffix = 1;
 
         while (User::where('username', $username)->exists()) {
-            $username = Str::limit($baseUsername, 20 - strlen((string) $suffix) - 1, '') . '_' . $suffix;
+            $username = Str::limit($baseUsername, 20 - strlen((string) $suffix) - 1, '').'_'.$suffix;
             $suffix++;
         }
 
         return $username;
+    }
+
+    private function generateAvatarUrl(): string
+    {
+        return 'https://api.dicebear.com/9.x/thumbs/svg?seed='.urlencode(Str::uuid()->toString());
     }
 }

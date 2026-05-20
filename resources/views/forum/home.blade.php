@@ -12,11 +12,11 @@
             </p>
             <div class="flex flex-wrap gap-3">
                 <a href="{{ route('threads.create') }}" class="forum-btn">Start a discussion</a>
-                @auth
-                    <a href="{{ route('admin.categories') }}" class="forum-btn-secondary">Manage categories</a>
-                @else
+                @guest
                     <a href="{{ route('login') }}" class="forum-btn-secondary">Login to start posting</a>
-                @endauth
+                @elseif (auth()->user()->role === 'admin')
+                    <a href="{{ route('admin.categories') }}" class="forum-btn-secondary">Manage categories</a>
+                @endif
                 <a href="{{ route('search') }}" class="forum-btn-secondary">Search discussions</a>
             </div>
         </div>

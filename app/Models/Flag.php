@@ -14,6 +14,7 @@ class Flag extends Model
         'status',
         'resolved_by',
         'resolved_at',
+        'moderator_notes',
     ];
 
     protected function casts(): array
@@ -52,5 +53,12 @@ class Flag extends Model
     public function isResolved(): bool
     {
         return $this->status === 'resolved';
+    }
+
+    // ─── Scopes ────────────────────────────────────────────────────────────────
+
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
     }
 }

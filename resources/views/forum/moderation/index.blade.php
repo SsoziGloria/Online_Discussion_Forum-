@@ -46,8 +46,43 @@
                             </div>
                         </div>
                         <div class="flex min-w-44 flex-col gap-3">
-                            <span class="forum-btn-disabled text-center">Dismiss flag</span>
-                            <span class="forum-btn-disabled text-center">Delete post</span>
+                            <!-- Dismiss Flag Form -->
+                            <form action="{{ route('flags.dismiss', $flag->id) }}" method="POST" class="w-full" id="dismiss-form-{{ $flag->id }}">
+                                @csrf
+                                @method('PATCH')
+                                <div class="mb-3">
+                                    <textarea
+                                        name="moderator_notes"
+                                        placeholder="Reason for dismissal..."
+                                        class="w-full rounded border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] placeholder-[var(--color-muted)]"
+                                        rows="2"
+                                        required></textarea>
+                                </div>
+                                <button type="submit" class="forum-btn w-full text-center">Dismiss flag</button>
+                            </form>
+
+                            <!-- Delete Post Form -->
+                            <form action="{{ route('flags.delete-post', $flag->id) }}" method="POST" class="w-full" id="delete-form-{{ $flag->id }}">
+                                @csrf
+                                @method('DELETE')
+                                <div class="mb-3">
+                                    <textarea
+                                        name="moderator_notes"
+                                        placeholder="Reason for deletion..."
+                                        class="w-full rounded border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] placeholder-[var(--color-muted)]"
+                                        rows="2"
+                                        required></textarea>
+                                </div>
+                                <button
+                                    type="submit"
+                                    class="inline-flex w-full items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98]"
+                                    style="background: #dc2626; color: white; box-shadow: 0 10px 24px rgba(220, 38, 38, 0.18);"
+                                    onmouseover="this.style.background='#b91c1c'"
+                                    onmouseout="this.style.background='#dc2626'"
+                                    onclick="return confirm('Are you sure you want to DELETE this post? This action cannot be undone.');">
+                                    Delete post
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </article>

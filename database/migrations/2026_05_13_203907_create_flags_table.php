@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'resolved'])->default('pending');
             $table->foreignId('resolved_by')->nullable()->nullOnDelete()->constrained('users');
             $table->timestamp('resolved_at')->nullable();
+            $table->text('moderator_notes')->nullable();
             $table->timestamps();
         });
     }

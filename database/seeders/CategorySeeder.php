@@ -16,27 +16,27 @@ class CategorySeeder extends Seeder
             [
                 'name' => 'Laravel Architecture',
                 'slug' => 'laravel-architecture',
-                'description' => 'Patterns, tradeoffs, migrations, validation, and long-term maintainability.',
+                'description' => 'Laravel ideas, simple patterns, and stories about improving a forum.',
             ],
             [
                 'name' => 'Frontend Systems',
                 'slug' => 'frontend-systems',
-                'description' => 'Design systems, component strategy, accessibility, and interaction design.',
+                'description' => 'Layout choices, friendly interfaces, and clear page structure.',
             ],
             [
                 'name' => 'Database Design',
                 'slug' => 'database-design',
-                'description' => 'Schema planning, query structure, indexing, and relational modeling.',
+                'description' => 'Keeping data tidy, related, and easy to reason about.',
             ],
             [
                 'name' => 'DevOps and Infra',
                 'slug' => 'devops-infra',
-                'description' => 'Deployments, observability, environment safety, queues, and automation.',
+                'description' => 'Shipping updates, safe releases, and practical rollout notes.',
             ],
             [
                 'name' => 'Community Feedback',
                 'slug' => 'community-feedback',
-                'description' => 'Product ideas, moderation notes, workflow issues, and UX observations.',
+                'description' => 'Feature ideas, moderation notes, and general forum conversation.',
             ],
         ];
 

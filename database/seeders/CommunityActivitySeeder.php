@@ -22,35 +22,35 @@ class CommunityActivitySeeder extends Seeder
         $threads = Thread::query()->get()->keyBy('slug');
 
         $paxosReply = Post::query()
-            ->where('thread_id', $threads['when-should-a-laravel-revamp-keep-the-original-auth-fields']->id)
-            ->where('user_id', $users['grace_schema']->id)
+            ->where('thread_id', $threads['when-should-a-laravel-update-keep-the-old-sign-in-fields']->id)
+            ->where('user_id', $users['elly_notes']->id)
             ->firstOrFail();
 
         $modReply = Post::query()
-            ->where('thread_id', $threads['when-should-a-laravel-revamp-keep-the-original-auth-fields']->id)
-            ->where('user_id', $users['moses_mod']->id)
+            ->where('thread_id', $threads['when-should-a-laravel-update-keep-the-old-sign-in-fields']->id)
+            ->where('user_id', $users['margaret_mod']->id)
             ->firstOrFail();
 
         $seedReply = Post::query()
-            ->where('thread_id', $threads['how-do-you-seed-realistic-forum-data-without-breaking-foreign-keys']->id)
-            ->where('user_id', $users['isaac_infra']->id)
+            ->where('thread_id', $threads['how-do-you-make-seeded-forum-posts-feel-natural']->id)
+            ->where('user_id', $users['robin_lane']->id)
             ->firstOrFail();
 
         $feedbackReply = Post::query()
-            ->where('thread_id', $threads['what-should-stay-visible-in-read-only-previews-during-production']->id)
-            ->where('user_id', $users['daniel_query']->id)
+            ->where('thread_id', $threads['what-kind-of-community-posts-make-a-demo-forum-feel-alive']->id)
+            ->where('user_id', $users['paulla_reads']->id)
             ->firstOrFail();
 
         $votes = [
-            [$users['amina_admin']->id, $paxosReply->id, 1],
-            [$users['sarah_codes']->id, $paxosReply->id, 1],
-            [$users['nia_product']->id, $paxosReply->id, 1],
-            [$users['grace_schema']->id, $modReply->id, 1],
-            [$users['daniel_query']->id, $modReply->id, 1],
-            [$users['amina_admin']->id, $seedReply->id, 1],
-            [$users['grace_schema']->id, $seedReply->id, 1],
-            [$users['moses_mod']->id, $feedbackReply->id, 1],
-            [$users['peter_archived']->id, $feedbackReply->id, -1],
+            [$users['gloria_admin']->id, $paxosReply->id, 1],
+            [$users['paulla_reads']->id, $paxosReply->id, 1],
+            [$users['robin_lane']->id, $paxosReply->id, 1],
+            [$users['elly_notes']->id, $modReply->id, 1],
+            [$users['kai_brooks']->id, $modReply->id, 1],
+            [$users['gloria_admin']->id, $seedReply->id, 1],
+            [$users['elly_notes']->id, $seedReply->id, 1],
+            [$users['margaret_mod']->id, $feedbackReply->id, 1],
+            [$users['omar_bell']->id, $feedbackReply->id, -1],
         ];
 
         foreach ($votes as [$userId, $postId, $value]) {
@@ -69,7 +69,7 @@ class CommunityActivitySeeder extends Seeder
         Flag::query()->updateOrCreate(
             [
                 'post_id' => $feedbackReply->id,
-                'reported_by' => $users['nia_product']->id,
+                'reported_by' => $users['robin_lane']->id,
             ],
             [
                 'reason' => 'other',
@@ -82,49 +82,49 @@ class CommunityActivitySeeder extends Seeder
         Flag::query()->updateOrCreate(
             [
                 'post_id' => $seedReply->id,
-                'reported_by' => $users['peter_archived']->id,
+                'reported_by' => $users['omar_bell']->id,
             ],
             [
                 'reason' => 'misinformation',
                 'status' => 'resolved',
-                'resolved_by' => $users['moses_mod']->id,
+                'resolved_by' => $users['margaret_mod']->id,
                 'resolved_at' => now()->subDay(),
             ]
         );
 
         Warning::query()->updateOrCreate(
             [
-                'user_id' => $users['peter_archived']->id,
-                'issued_by' => $users['moses_mod']->id,
+                'user_id' => $users['omar_bell']->id,
+                'issued_by' => $users['margaret_mod']->id,
             ],
             [
-                'reason' => 'Repeatedly posting disruptive replies and ignoring moderator guidance.',
+                'reason' => 'Kept posting sharp replies after a few reminders to keep things friendly.',
             ]
         );
 
         $notifications = [
             [
-                'user_id' => $users['sarah_codes']->id,
+                'user_id' => $users['elly_notes']->id,
                 'type' => 'reply',
-                'data' => ['thread' => $threads['when-should-a-laravel-revamp-keep-the-original-auth-fields']->title],
+                'data' => ['thread' => $threads['when-should-a-laravel-update-keep-the-old-sign-in-fields']->title],
                 'is_read' => false,
             ],
             [
-                'user_id' => $users['daniel_query']->id,
+                'user_id' => $users['paulla_reads']->id,
                 'type' => 'mention',
-                'data' => ['thread' => $threads['how-do-you-seed-realistic-forum-data-without-breaking-foreign-keys']->title],
+                'data' => ['thread' => $threads['how-do-you-make-seeded-forum-posts-feel-natural']->title],
                 'is_read' => false,
             ],
             [
-                'user_id' => $users['isaac_infra']->id,
+                'user_id' => $users['robin_lane']->id,
                 'type' => 'upvote',
-                'data' => ['thread' => $threads['how-do-you-seed-realistic-forum-data-without-breaking-foreign-keys']->title],
+                'data' => ['thread' => $threads['how-do-you-make-seeded-forum-posts-feel-natural']->title],
                 'is_read' => true,
             ],
             [
-                'user_id' => $users['nia_product']->id,
+                'user_id' => $users['gloria_admin']->id,
                 'type' => 'reply',
-                'data' => ['thread' => $threads['how-far-should-a-themed-auth-flow-match-the-main-forum-shell']->title],
+                'data' => ['thread' => $threads['how-far-should-the-guest-homepage-match-the-main-forum']->title],
                 'is_read' => true,
             ],
         ];

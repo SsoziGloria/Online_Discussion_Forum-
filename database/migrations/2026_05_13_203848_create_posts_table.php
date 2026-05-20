@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('thread_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->nullOnDelete()->constrained();
+            $table->unsignedBigInteger('parent_id')->nullable();
             $table->text('body');
+            $table->boolean('is_opening')->default(false);
             $table->boolean('is_edited')->default(false);
             $table->timestamp('edited_at')->nullable();
             $table->integer('vote_score')->default(0);

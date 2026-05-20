@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->unsignedInteger('thread_count')->default(0);
+            $table->boolean('is_locked')->default(false);
             $table->timestamps();
         });
     }

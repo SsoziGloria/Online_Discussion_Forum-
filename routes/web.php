@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommunityController;
+use App\Http\Controllers\FlagController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
@@ -27,10 +28,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/threads/{thread:slug}', [ThreadController::class, 'destroy'])->name('threads.destroy');
 
     Route::middleware('role:admin')->group(function () {
+        Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+        Route::get('/admin/categories', [AdminController::class, 'categories'])->name('admin.categories');
         Route::get('/categories/{category:slug}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
         Route::put('/categories/{category:slug}', [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('/categories/{category:slug}', [CategoryController::class, 'destroy'])->name('categories.destroy');
         Route::patch('/members/{user:username}/ban', [CommunityController::class, 'toggleBan'])->name('members.ban.toggle');
+    });
+
+    Route::middleware('role:moderator,admin')->group(function () {
+        Route::get('/moderation/flags', [ForumController::class, 'moderation'])->name('moderation.flags');
+        Route::patch('/flags/{flag}/dismiss', [FlagController::class, 'dismiss'])->name('flags.dismiss');
+        Route::delete('/flags/{flag}/delete-post', [FlagController::class, 'deletePost'])->name('flags.delete-post');
     });
 
     Route::post('/threads/{thread:slug}/posts', [PostController::class, 'store'])->name('posts.store');
@@ -45,11 +54,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/notifications', [ForumController::class, 'notifications'])->name('notifications.index');
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
     Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
-    Route::get('/moderation/flags', [ForumController::class, 'moderation'])->name('moderation.flags');
     Route::get('/settings/profile', [CommunityController::class, 'settings'])->name('settings.profile');
 
-    Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
-    Route::get('/admin/categories', [AdminController::class, 'categories'])->name('admin.categories');
 });
 
 Route::get('/categories/{category:slug}', [ForumController::class, 'category'])->name('categories.show');
