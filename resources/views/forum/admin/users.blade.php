@@ -5,9 +5,9 @@
 @section('content')
     <section class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-            <p class="forum-eyebrow">Admin preview</p>
+            <p class="forum-eyebrow">Admin Dashboard</p>
             <h1 class="forum-title mt-2">User management</h1>
-            <p class="forum-copy mt-4">The table is backed by the `users` model, with thread, reply, and warning counts surfaced for moderation context.</p>
+            <p class="forum-copy mt-4">Manage users and their permissions.</p>
         </div>
         <form action="{{ route('admin.users') }}" method="GET" class="w-full max-w-sm">
             <input type="search" name="q" value="{{ $query }}" class="forum-input" placeholder="Search users">

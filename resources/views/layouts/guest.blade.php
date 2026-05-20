@@ -20,7 +20,7 @@
                     <p class="forum-eyebrow mt-8">Member access</p>
                     <h1 class="forum-title mt-3">Your community account, all in one familiar place.</h1>
                     <p class="forum-copy mt-6">
-                        Sign in, create an account, or recover access using the same calm and welcoming experience as the rest of the forum.
+                        Sign in, create an account, or recover access here.
                     </p>
                 </div>
 

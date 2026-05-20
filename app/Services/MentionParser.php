@@ -31,7 +31,7 @@ class MentionParser
     public static function resolveUsersByUsernames(array $usernames): Collection
     {
         if (empty($usernames)) {
-            return collect();
+            return new Collection;
         }
 
         return User::query()

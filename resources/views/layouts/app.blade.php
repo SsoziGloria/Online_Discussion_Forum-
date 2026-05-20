@@ -50,8 +50,12 @@
             <nav class="flex flex-wrap gap-4">
                 <a href="{{ route('home') }}" class="transition hover:text-[var(--color-primary)]">Discussions</a>
                 <a href="{{ route('categories.index') }}" class="transition hover:text-[var(--color-primary)]">Categories</a>
-                <a href="{{ route('admin.users') }}" class="transition hover:text-[var(--color-primary)]">Members</a>
-                <a href="{{ route('moderation.flags') }}" class="transition hover:text-[var(--color-primary)]">Moderation</a>
+                @if(auth()->user()?->isAdmin())
+                    <a href="{{ route('admin.users') }}" class="transition hover:text-[var(--color-primary)]">Members</a>
+                @endif
+                @if(auth()->user()?->isModerator())
+                    <a href="{{ route('moderation.flags') }}" class="transition hover:text-[var(--color-primary)]">Moderation</a>
+                @endif
             </nav>
         </div>
     </footer>
