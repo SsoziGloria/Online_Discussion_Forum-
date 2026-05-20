@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $thread->title.' · Modern Discourse')
+@section('title', $thread->title.' · DevDen')
 
 @section('content')
     <section class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
@@ -9,11 +9,11 @@
                 Back to {{ $thread->category->name }}
             </a>
 
-            @if (session('success'))
+            {{-- @if (session('success'))
                 <div class="forum-banner-success mt-5">
                     {{ session('success') }}
                 </div>
-            @endif
+            @endif --}}
 
             <header class="mt-5 forum-card">
                 <div class="flex flex-wrap items-start justify-between gap-4">
@@ -100,38 +100,63 @@
             </section>
 
             @auth
-                @if (! $thread->is_locked)
+                @if (auth()->user()?->is_banned)
                     <section class="forum-card mt-8">
-                        <div class="mb-5 flex items-center justify-between gap-4">
-                            <div>
-                                <p class="forum-eyebrow">Join the discussion</p>
-                                <h2 class="forum-section-title mt-2">Post a reply</h2>
-                            </div>
+                        <div class="forum-banner-danger">
+                            Your account has been banned. Posting replies is disabled.
                         </div>
 
-                        <form method="POST" action="{{ route('posts.store', $thread) }}" class="space-y-4">
+                        <form class="space-y-4" aria-hidden="true">
                             @csrf
                             <textarea
                                 name="body"
                                 rows="8"
                                 class="forum-textarea"
                                 placeholder="Add a thoughtful reply to the thread."
-                                required
+                                disabled
                             >{{ old('parent_id') ? '' : old('body') }}</textarea>
                             <x-input-error :messages="$errors->get('body')" class="mt-2" />
 
                             <div class="flex items-center justify-between gap-4">
                                 <p class="text-sm text-[var(--color-muted)]">Replies are posted directly into this thread.</p>
-                                <button type="submit" class="forum-btn">Submit reply</button>
+                                <button type="submit" class="forum-btn" disabled>Submit reply</button>
                             </div>
                         </form>
                     </section>
                 @else
-                    <section class="forum-card mt-8">
-                        <div class="forum-banner-danger">
-                            This thread is locked. New replies are disabled.
-                        </div>
-                    </section>
+                    @if (! $thread->is_locked)
+                        <section class="forum-card mt-8">
+                            <div class="mb-5 flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="forum-eyebrow">Join the discussion</p>
+                                    <h2 class="forum-section-title mt-2">Post a reply</h2>
+                                </div>
+                            </div>
+
+                            <form method="POST" action="{{ route('posts.store', $thread) }}" class="space-y-4">
+                                @csrf
+                                <textarea
+                                    name="body"
+                                    rows="8"
+                                    class="forum-textarea"
+                                    placeholder="Add a thoughtful reply to the thread."
+                                    required
+                                >{{ old('parent_id') ? '' : old('body') }}</textarea>
+                                <x-input-error :messages="$errors->get('body')" class="mt-2" />
+
+                                <div class="flex items-center justify-between gap-4">
+                                    <p class="text-sm text-[var(--color-muted)]">Replies are posted directly into this thread.</p>
+                                    <button type="submit" class="forum-btn">Submit reply</button>
+                                </div>
+                            </form>
+                        </section>
+                    @else
+                        <section class="forum-card mt-8">
+                            <div class="forum-banner-danger">
+                                This thread is locked. New replies are disabled.
+                            </div>
+                        </section>
+                    @endif
                 @endif
             @endauth
         </div>

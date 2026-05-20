@@ -6,10 +6,10 @@ use App\Models\Flag;
 use App\Models\Notification;
 use App\Models\Post;
 use App\Models\Thread;
+use App\Models\User;
 use App\Models\Vote;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -54,6 +54,16 @@ class PostController extends Controller
             return back()->with('error', 'This thread is locked. New replies are disabled.');
         }
 
+        $user = Auth::user();
+
+        if (! $user) {
+            abort(403);
+        }
+
+        if ($user->is_banned) {
+            return back()->with('error', 'Your account has been banned. Posting replies is disabled.');
+        }
+
         $request->validate([
             'body' => 'required|min:1|max:2000',
             'parent_id' => [
@@ -65,9 +75,9 @@ class PostController extends Controller
 
         DB::transaction(function () use ($request, $thread) {
             Post::create([
-                'body'      => $request->body,
+                'body' => $request->body,
                 'thread_id' => $thread->id,
-                'user_id'   => Auth::id(),
+                'user_id' => Auth::id(),
                 'parent_id' => $request->input('parent_id'),
             ]);
 
@@ -162,7 +172,7 @@ class PostController extends Controller
     public function report(Post $post): View
     {
         // Prevent self-reporting
-        abort_if($post->user_id === Auth::id(), 403, "You cannot report your own post.");
+        abort_if($post->user_id === Auth::id(), 403, 'You cannot report your own post.');
 
         $post->load(['thread.category', 'user']);
 
@@ -181,9 +191,9 @@ class PostController extends Controller
 
         Flag::updateOrCreate(
             [
-                'post_id'     => $post->id,
+                'post_id' => $post->id,
                 'reported_by' => Auth::id(),
-                'status'      => 'pending',
+                'status' => 'pending',
             ],
             [
                 'reason' => $validated['reason'],
@@ -212,7 +222,7 @@ class PostController extends Controller
 
     public function destroy(Post $post): RedirectResponse
     {
-        /** @var \App\Models\User|null $user */
+        /** @var User|null $user */
         $user = Auth::user();
 
         if (! $user) {
@@ -241,7 +251,7 @@ class PostController extends Controller
 
     public function resolveFlag(Flag $flag): RedirectResponse
     {
-        /** @var \App\Models\User|null $user */
+        /** @var User|null $user */
         $user = Auth::user();
 
         if (! $user || (! $user->isModerator() && ! $user->isAdmin())) {
@@ -249,7 +259,7 @@ class PostController extends Controller
         }
 
         $flag->update([
-            'status'      => 'resolved',
+            'status' => 'resolved',
             'resolver_id' => Auth::id(),
         ]);
 

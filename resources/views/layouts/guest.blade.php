@@ -16,7 +16,7 @@
         <div class="forum-shell-auth">
             <section class="forum-auth-hero">
                 <div class="max-w-2xl">
-                    <a href="{{ route('home') }}" class="forum-tag-neutral">Modern Discourse</a>
+                    <a href="{{ route('home') }}" class="forum-tag-neutral">DevDen</a>
                     <p class="forum-eyebrow mt-8">Member access</p>
                     <h1 class="forum-title mt-3">Your community account, all in one familiar place.</h1>
                     <p class="forum-copy mt-6">

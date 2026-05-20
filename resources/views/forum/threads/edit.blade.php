@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Thread · Modern Discourse')
+@section('title', 'Edit Thread · DevDen')
 
 @section('content')
     <section class="mx-auto max-w-3xl">
